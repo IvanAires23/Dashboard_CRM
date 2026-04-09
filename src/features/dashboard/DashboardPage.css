@@ -1,0 +1,137 @@
+.metrics-grid,
+.content-grid,
+.stage-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.metrics-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.metric-card,
+.panel {
+  padding: 1.25rem;
+}
+
+.metric-head {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  align-items: start;
+}
+
+.metric-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.9rem;
+  display: grid;
+  place-items: center;
+  background: #eff6ff;
+  color: var(--accent);
+}
+
+.metric-copy span,
+.metric-note,
+.activity-list span,
+.stage-card span {
+  color: var(--muted);
+}
+
+.metric-copy span {
+  display: block;
+  font-size: 0.92rem;
+}
+
+.metric-value {
+  margin: 0.2rem 0 0;
+  color: var(--text);
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.metric-footer {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.metric-footer strong {
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.metric-note {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  text-align: right;
+}
+
+.content-grid {
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
+}
+
+.stage-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stage-card {
+  padding: 1rem;
+  border-radius: 0.9rem;
+  background: #f8fafc;
+}
+
+.stage-card strong {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--text);
+  font-size: 1.4rem;
+  letter-spacing: -0.03em;
+}
+
+.stage-card p {
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+}
+
+.activity-panel {
+  height: 100%;
+}
+
+.activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.activity-list li {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.activity-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.activity-list strong {
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 1120px) {
+  .metrics-grid,
+  .content-grid,
+  .stage-grid {
+    grid-template-columns: 1fr;
+  }
+}

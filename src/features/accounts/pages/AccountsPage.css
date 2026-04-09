@@ -1,0 +1,37 @@
+.accounts-page,
+.accounts-summary {
+  display: grid;
+  gap: 1rem;
+}
+
+.accounts-summary {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.accounts-mini-stat {
+  padding: 1rem;
+  box-shadow: none;
+}
+
+.accounts-mini-stat span,
+.accounts-mini-stat p {
+  color: var(--muted);
+}
+
+.accounts-mini-stat strong {
+  display: block;
+  margin: 0.25rem 0;
+  font-size: 1.2rem;
+  letter-spacing: -0.03em;
+}
+
+.accounts-mini-stat p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+@media (max-width: 1120px) {
+  .accounts-summary {
+    grid-template-columns: 1fr;
+  }
+}
