@@ -3,10 +3,8 @@ import { canAccessModule } from '../lib/auth/rolePermissions.js'
 import { useAuthStore } from '../store/auth.js'
 
 function ProtectedRoute({ children, requiredModule }) {
-  const { isAuthenticated, user } = useAuthStore((state) => ({
-    isAuthenticated: state.isAuthenticated,
-    user: state.user,
-  }))
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
+  const user = useAuthStore((state) => state.user)
   const location = useLocation()
 
   if (!isAuthenticated) {
