@@ -59,25 +59,45 @@ The main scripts defined in [package.json](./package.json) are:
 npm install
 ```
 
-2. Start the development server:
+2. Configure environment variables:
+
+Create a local env file from the example and set your API URL.
+
+```bash
+cp .env.example .env.local
+```
+
+The shared HTTP layer reads:
+
+- `VITE_API_URL`
+- `VITE_AUTH_MOCK` (optional, defaults to `true` for local mocked login)
+
+Example:
+
+```env
+VITE_API_URL=http://localhost:3000/api
+VITE_AUTH_MOCK=true
+```
+
+3. Start the development server:
 
 ```bash
 npm run dev
 ```
 
-3. Open the local Vite URL shown in the terminal, typically:
+4. Open the local Vite URL shown in the terminal, typically:
 
 ```text
 http://localhost:5173
 ```
 
-4. Build for production when needed:
+5. Build for production when needed:
 
 ```bash
 npm run build
 ```
 
-5. Preview the production build:
+6. Preview the production build:
 
 ```bash
 npm run preview

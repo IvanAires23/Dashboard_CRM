@@ -11,11 +11,13 @@
 .accounts-mini-stat {
   padding: 1rem;
   box-shadow: none;
+  border-color: rgba(148, 163, 184, 0.22);
+  background: linear-gradient(160deg, rgba(6, 22, 34, 0.88), rgba(12, 37, 55, 0.7));
 }
 
 .accounts-mini-stat span,
 .accounts-mini-stat p {
-  color: var(--muted);
+  color: #8fa7be;
 }
 
 .accounts-mini-stat strong {
@@ -23,6 +25,7 @@
   margin: 0.25rem 0;
   font-size: 1.2rem;
   letter-spacing: -0.03em;
+  color: #f3f8ff;
 }
 
 .accounts-mini-stat p {

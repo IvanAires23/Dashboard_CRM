@@ -4,6 +4,7 @@ import WidgetContainer from './WidgetContainer.jsx'
 
 function ModulePage({
   eyebrow = 'Module',
+  title,
   description,
   summaryCards = [],
   nextSteps = [],
@@ -13,6 +14,7 @@ function ModulePage({
       <Card className="module-header">
         <div className="module-header__copy">
           <p className="eyebrow">{eyebrow}</p>
+          {title ? <h1>{title}</h1> : null}
           <p>{description}</p>
         </div>
       </Card>

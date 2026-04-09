@@ -238,16 +238,25 @@
   transform: translateY(-1px);
 }
 
-.cover-login__demo-link {
-  width: fit-content;
-  color: #0e7490;
-  font-weight: 600;
-  text-decoration: none;
+.cover-login__form button:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+  transform: none;
 }
 
-.cover-login__demo-link:hover,
-.cover-login__demo-link:focus-visible {
-  text-decoration: underline;
+.cover-login__error {
+  margin: 0.25rem 0 0;
+  color: #be123c;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+.cover-login__hint {
+  margin: 0.1rem 0 0;
+  color: #334155;
+  font-size: 0.82rem;
+  line-height: 1.4;
 }
 
 .cover-login__mini-panel {

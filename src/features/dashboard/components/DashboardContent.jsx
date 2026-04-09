@@ -1,4 +1,3 @@
-import PageContainer from '../../../components/ui/PageContainer.jsx'
 import AccountsTable from './AccountsTable.jsx'
 import ActivityFeed from './ActivityFeed.jsx'
 import PipelineStages from './PipelineStages.jsx'
@@ -11,7 +10,7 @@ function DashboardContent({
   pipelineStages,
 }) {
   return (
-    <PageContainer>
+    <>
       <StatsGrid cards={performanceCards} />
 
       <section className="content-grid">
@@ -20,7 +19,7 @@ function DashboardContent({
       </section>
 
       <AccountsTable rows={accountRows} />
-    </PageContainer>
+    </>
   )
 }
 

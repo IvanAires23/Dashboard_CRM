@@ -21,6 +21,7 @@ export const publicRoutes = [
 export const privateRoutes = [
   {
     path: '/dashboard',
+    moduleKey: 'dashboard',
     label: 'Overview',
     title: 'Dashboard',
     subtitle: "Welcome back. Here's your sales overview.",
@@ -29,6 +30,7 @@ export const privateRoutes = [
   },
   {
     path: '/deals',
+    moduleKey: 'deals',
     label: 'Deals',
     title: 'Deals',
     subtitle: 'Manage pipeline, stages and revenue movement.',
@@ -36,6 +38,7 @@ export const privateRoutes = [
   },
   {
     path: '/accounts',
+    moduleKey: 'accounts',
     label: 'Accounts',
     title: 'Accounts',
     subtitle: 'Track portfolio health, owners and renewals.',
@@ -43,6 +46,7 @@ export const privateRoutes = [
   },
   {
     path: '/contacts',
+    moduleKey: 'contacts',
     label: 'Contacts',
     title: 'Contacts',
     subtitle: 'Maintain stakeholder context and relationship history.',
@@ -50,6 +54,7 @@ export const privateRoutes = [
   },
   {
     path: '/tasks',
+    moduleKey: 'tasks',
     label: 'Tasks',
     title: 'Tasks',
     subtitle: 'Organize follow-ups and execution queues.',
@@ -57,6 +62,7 @@ export const privateRoutes = [
   },
   {
     path: '/calendar',
+    moduleKey: 'calendar',
     label: 'Calendar',
     title: 'Calendar',
     subtitle: 'Coordinate meetings, follow-ups and team schedules.',
@@ -64,6 +70,7 @@ export const privateRoutes = [
   },
   {
     path: '/settings',
+    moduleKey: 'settings',
     label: 'Settings',
     title: 'Settings',
     subtitle: 'Configure workspace preferences and operations.',

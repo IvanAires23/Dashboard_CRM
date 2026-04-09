@@ -1,17 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap');
 
 :root {
-  --bg: #f5f7fb;
-  --panel: rgba(255, 255, 255, 0.96);
-  --panel-solid: #ffffff;
-  --panel-soft: #fafbfc;
-  --line: #e2e8f0;
-  --text: #0f172a;
-  --muted: #667085;
-  --accent: #2563eb;
-  --accent-soft: #0f5a9d;
-  --accent-strong: #1d4ed8;
-  --shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  --bg: #06121d;
+  --bg-layer: #0d2133;
+  --panel: rgba(10, 31, 48, 0.74);
+  --panel-strong: rgba(8, 25, 39, 0.9);
+  --panel-soft: rgba(15, 40, 60, 0.66);
+  --line: rgba(148, 163, 184, 0.26);
+  --line-strong: rgba(148, 163, 184, 0.4);
+  --text: #e6edf6;
+  --muted: #9cb0c6;
+  --accent: #14b8a6;
+  --accent-soft: #0f766e;
+  --accent-strong: #0e7490;
+  --ok: #34d399;
+  --warn: #f59e0b;
+  --danger: #fb7185;
+  --shadow: 0 22px 44px rgba(2, 12, 22, 0.42);
+  --radius-lg: 1.2rem;
+  --radius-md: 0.9rem;
   font-family: 'IBM Plex Sans', sans-serif;
   color: var(--text);
   background: var(--bg);
@@ -33,7 +40,24 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: var(--bg);
+  background:
+    radial-gradient(circle at 12% 16%, rgba(8, 145, 178, 0.26), transparent 40%),
+    radial-gradient(circle at 88% 8%, rgba(251, 146, 60, 0.2), transparent 32%),
+    linear-gradient(135deg, var(--bg) 0%, var(--bg-layer) 58%, #17314a 100%);
+  color: var(--text);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(circle at center, #000 20%, transparent 90%);
 }
 
 body,
@@ -50,8 +74,10 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'IBM Plex Sans', sans-serif;
+  margin: 0;
+  font-family: 'Sora', 'IBM Plex Sans', sans-serif;
   font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 button {

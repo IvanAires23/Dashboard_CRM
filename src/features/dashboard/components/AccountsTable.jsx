@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Badge from '../../../components/ui/Badge.jsx'
+import EmptyState from '../../../components/ui/EmptyState.jsx'
 import Pagination from '../../../components/ui/Pagination.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
 
@@ -18,46 +19,57 @@ function AccountsTable({ rows }) {
       title="High-value portfolio"
       meta="Prioritized for success and expansion"
     >
-      <div className="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Account</th>
-              <th>Owner</th>
-              <th>Segment</th>
-              <th>Health</th>
-              <th>MRR</th>
-            </tr>
-          </thead>
-          <tbody>
-            {visibleRows.map((row) => (
-              <tr key={row.name}>
-                <td>{row.name}</td>
-                <td>{row.owner}</td>
-                <td>{row.segment}</td>
-                <td>
-                  <Badge variant={row.health.toLowerCase()}>
-                    {row.health}
-                  </Badge>
-                </td>
-                <td>{row.mrr}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {rows.length ? (
+        <>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Account</th>
+                  <th>Owner</th>
+                  <th>Segment</th>
+                  <th>Health</th>
+                  <th>MRR</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visibleRows.map((row) => (
+                  <tr key={row.name}>
+                    <td>{row.name}</td>
+                    <td>{row.owner}</td>
+                    <td>{row.segment}</td>
+                    <td>
+                      <Badge variant={row.health.toLowerCase()}>
+                        {row.health}
+                      </Badge>
+                    </td>
+                    <td>{row.mrr}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      <div className="table-footer">
-        <p>
-          Showing {startIndex + 1}-{Math.min(startIndex + rowsPerPage, rows.length)} of {rows.length}{' '}
-          accounts
-        </p>
-        <Pagination
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          totalPages={totalPages}
+          <div className="table-footer">
+            <p>
+              Showing {startIndex + 1}-{Math.min(startIndex + rowsPerPage, rows.length)} of{' '}
+              {rows.length} accounts
+            </p>
+            <Pagination
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+              totalPages={totalPages}
+            />
+          </div>
+        </>
+      ) : (
+        <EmptyState
+          contained={false}
+          eyebrow="Accounts"
+          title="No portfolio accounts"
+          description="Account records will appear here when data is available."
         />
-      </div>
+      )}
     </WidgetContainer>
   )
 }

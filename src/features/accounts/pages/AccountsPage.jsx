@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Badge from '../../../components/ui/Badge.jsx'
 import Card from '../../../components/ui/Card.jsx'
+import EmptyState from '../../../components/ui/EmptyState.jsx'
 import PageContainer from '../../../components/ui/PageContainer.jsx'
 import Pagination from '../../../components/ui/Pagination.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
@@ -16,6 +17,18 @@ function AccountsPage() {
   const strongAccounts = accountRows.filter((row) => row.health === 'Strong').length
   const watchAccounts = accountRows.filter((row) => row.health === 'Watch').length
   const riskAccounts = accountRows.filter((row) => row.health === 'Risk').length
+
+  if (!accountRows.length) {
+    return (
+      <PageContainer className="accounts-page">
+        <EmptyState
+          eyebrow="Accounts"
+          title="No accounts found"
+          description="There are no account records available right now."
+        />
+      </PageContainer>
+    )
+  }
 
   return (
     <PageContainer className="accounts-page">

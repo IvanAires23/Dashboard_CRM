@@ -1,3 +1,4 @@
+import EmptyState from '../../../components/ui/EmptyState.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
 
 function ActivityFeed({ items }) {
@@ -9,14 +10,23 @@ function ActivityFeed({ items }) {
       eyebrow="Recent Activity"
       title="Team signals"
     >
-      <ul className="activity-list">
-        {items.map((item) => (
-          <li key={item.title}>
-            <strong>{item.title}</strong>
-            <span>{item.meta}</span>
-          </li>
-        ))}
-      </ul>
+      {items.length ? (
+        <ul className="activity-list">
+          {items.map((item) => (
+            <li key={item.title}>
+              <strong>{item.title}</strong>
+              <span>{item.meta}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <EmptyState
+          contained={false}
+          eyebrow="Activity"
+          title="No recent signals"
+          description="Team activity will appear here as updates happen."
+        />
+      )}
     </WidgetContainer>
   )
 }
