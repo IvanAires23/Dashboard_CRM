@@ -1,0 +1,52 @@
+.form-feedback {
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.72rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.form-feedback--loading {
+  color: #c5fbf5;
+  background: rgba(20, 184, 166, 0.16);
+  border: 1px solid rgba(20, 184, 166, 0.34);
+}
+
+.form-feedback__spinner {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 999px;
+  border: 2px solid rgba(94, 234, 212, 0.34);
+  border-top-color: #5eead4;
+  animation: form-feedback-spin 700ms linear infinite;
+}
+
+.form-feedback--success {
+  color: #bbf7d0;
+  background: rgba(16, 185, 129, 0.16);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.form-feedback--error {
+  color: #fecdd3;
+  background: rgba(244, 63, 94, 0.16);
+  border: 1px solid rgba(244, 63, 94, 0.32);
+}
+
+.form-feedback--warning {
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+@keyframes form-feedback-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

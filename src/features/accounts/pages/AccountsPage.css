@@ -33,6 +33,10 @@
   line-height: 1.45;
 }
 
+.accounts-actions {
+  margin-bottom: 0.8rem;
+}
+
 @media (max-width: 1120px) {
   .accounts-summary {
     grid-template-columns: 1fr;

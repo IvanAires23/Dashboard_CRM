@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import Badge from '../../../components/ui/Badge.jsx'
 import Card from '../../../components/ui/Card.jsx'
 import EmptyState from '../../../components/ui/EmptyState.jsx'
@@ -56,6 +57,12 @@ function AccountsPage() {
         title="Account directory"
         meta="Prioritized by owner, health and renewal timing"
       >
+        <div className="accounts-actions">
+          <Link className="state-action" to="/accounts/new">
+            Create account
+          </Link>
+        </div>
+
         <div className="table-wrap">
           <table>
             <thead>

@@ -1,0 +1,20 @@
+.pipeline-page {
+  gap: 1rem;
+}
+
+.pipeline-page__panel {
+  padding: 1.1rem;
+}
+
+.pipeline-page__intro {
+  margin: 0 0 0.9rem;
+  color: #9cb0c6;
+  line-height: 1.5;
+}
+
+.pipeline-page__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}

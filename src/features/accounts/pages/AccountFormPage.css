@@ -1,0 +1,13 @@
+.account-form-page {
+  max-width: 62rem;
+}
+
+.account-form-panel {
+  padding: 1.25rem;
+}
+
+.account-form-page__description {
+  margin: 0 0 1rem;
+  color: #9cb0c6;
+  line-height: 1.55;
+}

@@ -1,27 +1,26 @@
-.metrics-grid,
-.content-grid,
-.stage-grid {
+.dashboard-kpi-grid,
+.dashboard-widget-grid {
   display: grid;
   gap: 1rem;
 }
 
-.metrics-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.dashboard-kpi-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.metric-card,
-.panel {
+.dashboard-kpi-card,
+.dashboard-panel {
   padding: 1.25rem;
 }
 
-.metric-head {
+.dashboard-kpi-card__header {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 0.9rem;
   align-items: start;
 }
 
-.metric-icon {
+.dashboard-kpi-card__icon {
   width: 3rem;
   height: 3rem;
   border-radius: 0.9rem;
@@ -32,27 +31,28 @@
   color: #8ff7ee;
 }
 
-.metric-copy span,
-.metric-note,
-.activity-list span,
-.stage-card span {
+.dashboard-kpi-card__copy span,
+.dashboard-kpi-card__footer p,
+.dashboard-kpi-card__footer small,
+.dashboard-activity-list span {
   color: #9cb0c6;
 }
 
-.metric-copy span {
+.dashboard-kpi-card__copy span {
   display: block;
   font-size: 0.92rem;
 }
 
-.metric-value {
-  margin: 0.2rem 0 0;
+.dashboard-kpi-card__copy strong {
+  display: block;
+  margin-top: 0.2rem;
   color: #f4f9ff;
   font-size: 1.85rem;
   font-weight: 700;
   letter-spacing: -0.04em;
 }
 
-.metric-footer {
+.dashboard-kpi-card__footer {
   margin-top: 1rem;
   display: flex;
   align-items: center;
@@ -60,52 +60,90 @@
   gap: 1rem;
 }
 
-.metric-footer strong {
-  color: #67e8f9;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.metric-note {
+.dashboard-kpi-card__footer p {
   margin: 0;
   font-size: 0.9rem;
   line-height: 1.45;
   text-align: right;
 }
 
-.content-grid {
-  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
+.dashboard-kpi-card__footer small {
+  color: #67e8f9;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
-.stage-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.dashboard-widget-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.stage-card {
-  padding: 1rem;
-  border-radius: 0.9rem;
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  background: linear-gradient(160deg, rgba(5, 22, 34, 0.84), rgba(10, 32, 48, 0.7));
+.dashboard-widget-grid--disabled {
+  opacity: 0.9;
 }
 
-.stage-card strong {
-  display: block;
-  margin-top: 0.45rem;
-  color: #f3f8ff;
-  font-size: 1.4rem;
-  letter-spacing: -0.03em;
+.dashboard-widget-shell {
+  position: relative;
 }
 
-.stage-card p {
-  margin: 0.3rem 0 0;
-  color: #8fa7be;
+.dashboard-widget-shell--dragging {
+  opacity: 0.45;
 }
 
-.activity-panel {
-  height: 100%;
+.dashboard-widget-shell__handle {
+  position: absolute;
+  right: 0.65rem;
+  top: 0.7rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  border-radius: 0.55rem;
+  background: rgba(148, 163, 184, 0.08);
+  color: #9cb0c6;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  z-index: 8;
 }
 
-.activity-list {
+.dashboard-widget-shell__handle:active {
+  cursor: grabbing;
+}
+
+.dashboard-widget-shell__handle:focus-visible {
+  outline: 2px solid rgba(45, 212, 191, 0.55);
+  outline-offset: 1px;
+}
+
+.dashboard-widget-shell__handle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dashboard-widget-overlay {
+  padding: 0.8rem 0.95rem;
+  min-width: 210px;
+  border-color: rgba(45, 212, 191, 0.5);
+  box-shadow: 0 15px 28px rgba(2, 12, 22, 0.42);
+}
+
+.dashboard-widget-overlay__label {
+  margin: 0 0 0.25rem;
+  color: #8fb2cc;
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.dashboard-widget-overlay strong {
+  color: #e8f3ff;
+  font-size: 0.92rem;
+}
+
+.dashboard-chart {
+  margin-top: 0.75rem;
+}
+
+.dashboard-activity-list {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -113,27 +151,38 @@
   gap: 0.75rem;
 }
 
-.activity-list li {
+.dashboard-activity-list__item {
   display: grid;
   gap: 0.2rem;
   padding: 0.9rem 0;
   border-bottom: 1px solid rgba(148, 163, 184, 0.2);
 }
 
-.activity-list li:last-child {
+.dashboard-activity-list__item:last-child {
   border-bottom: 0;
   padding-bottom: 0;
 }
 
-.activity-list strong {
+.dashboard-activity-list strong {
   color: #eaf2fb;
   font-size: 0.95rem;
 }
 
+@media (max-width: 1440px) {
+  .dashboard-kpi-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1280px) {
+  .dashboard-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 1120px) {
-  .metrics-grid,
-  .content-grid,
-  .stage-grid {
+  .dashboard-kpi-grid,
+  .dashboard-widget-grid {
     grid-template-columns: 1fr;
   }
 }

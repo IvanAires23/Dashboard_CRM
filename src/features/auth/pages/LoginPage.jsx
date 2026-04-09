@@ -6,31 +6,45 @@ import {
   Sparkles,
   TrendingUp,
 } from 'lucide-react'
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import FormFeedback from '../../../lib/forms/FormFeedback.jsx'
+import { useAsyncFormSubmission } from '../../../lib/forms/submission.js'
+import { useZodForm } from '../../../lib/forms/useZodForm.js'
+import { loginDefaultValues, loginSchema } from '../schemas/loginSchema.js'
 import { useAuth } from '../useAuth.js'
 import './LoginPage.css'
 
 function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
   const { signIn, isLoading } = useAuth()
   const navigate = useNavigate()
+  const {
+    register,
+    handleSubmit,
+    getFieldError,
+    formState: { isSubmitting },
+  } = useZodForm({
+    schema: loginSchema,
+    defaultValues: loginDefaultValues,
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+  })
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
+  const emailError = getFieldError('email')
+  const passwordError = getFieldError('password')
+  const {
+    isSubmittingAsync,
+    errorMessage,
+    executeSubmission,
+  } = useAsyncFormSubmission({
+    defaultErrorMessage: 'Unable to sign in right now. Please try again.',
+  })
+  const isFormBusy = isLoading || isSubmitting || isSubmittingAsync
 
-    try {
-      await signIn({
-        email,
-        password,
-      })
-      setError('')
+  const onSubmit = async (values) => {
+    await executeSubmission(async () => {
+      await signIn(values)
       navigate('/dashboard', { replace: true })
-    } catch (loginError) {
-      setError(loginError?.message || 'Unable to sign in right now. Please try again.')
-    }
+    })
   }
 
   return (
@@ -91,16 +105,18 @@ function LoginPage() {
           <h2>Access your workspace</h2>
           <p>Where top-performing teams turn pipeline into predictable growth.</p>
 
-          <form className="cover-login__form" onSubmit={handleSubmit}>
+          <form className="cover-login__form" onSubmit={handleSubmit(onSubmit)} noValidate>
             <label htmlFor="email">Email</label>
             <input
               id="email"
               name="email"
               type="email"
               placeholder="email@email.com"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              autoComplete="email"
+              aria-invalid={emailError ? 'true' : 'false'}
+              {...register('email')}
             />
+            {emailError ? <p className="cover-login__error">{emailError}</p> : null}
 
             <label htmlFor="password">Password</label>
             <input
@@ -108,14 +124,20 @@ function LoginPage() {
               name="password"
               type="password"
               placeholder="123456"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
+              aria-invalid={passwordError ? 'true' : 'false'}
+              {...register('password')}
+            />
+            {passwordError ? <p className="cover-login__error">{passwordError}</p> : null}
+
+            <FormFeedback
+              isLoading={isFormBusy}
+              loadingText="Signing in..."
+              errorMessage={errorMessage}
             />
 
-            {error ? <p className="cover-login__error">{error}</p> : null}
-
-            <button type="submit" disabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign in'}
+            <button type="submit" disabled={isFormBusy}>
+              {isFormBusy ? 'Signing in...' : 'Sign in'}
               <ArrowRight size={16} />
             </button>
           </form>

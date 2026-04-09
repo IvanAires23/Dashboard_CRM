@@ -1,0 +1,126 @@
+.crud-toolbar {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.crud-toolbar__filters {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.crud-toolbar__field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.crud-toolbar__field label {
+  color: #9cb0c6;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.crud-toolbar__field input,
+.crud-toolbar__field select {
+  min-height: 2.5rem;
+  width: 100%;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(11, 33, 50, 0.7);
+  color: #e6edf6;
+  padding: 0.52rem 0.68rem;
+  outline: none;
+}
+
+.crud-toolbar__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.crud-table__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.crud-table__actions a,
+.crud-table__actions button {
+  min-height: 1.95rem;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(148, 163, 184, 0.08);
+  color: #dce8f5;
+  padding: 0.24rem 0.62rem;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.crud-table__actions button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.crud-detail {
+  display: grid;
+  gap: 1rem;
+}
+
+.crud-detail__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
+}
+
+.crud-detail__item {
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 0.8rem;
+  background: rgba(8, 26, 40, 0.55);
+  padding: 0.75rem 0.85rem;
+}
+
+.crud-detail__item dt {
+  margin: 0;
+  color: #8fa7be;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.crud-detail__item dd {
+  margin: 0.35rem 0 0;
+  color: #f1f7ff;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.crud-detail__actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.crud-detail__actions a,
+.crud-detail__actions button {
+  min-height: 2.2rem;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(148, 163, 184, 0.08);
+  color: #dce8f5;
+  padding: 0.3rem 0.8rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.crud-detail__actions .primary {
+  border-color: rgba(45, 212, 191, 0.35);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.3), rgba(14, 116, 144, 0.2));
+  color: #e8fffd;
+}
+
+@media (max-width: 900px) {
+  .crud-toolbar__filters,
+  .crud-detail__grid {
+    grid-template-columns: 1fr;
+  }
+}

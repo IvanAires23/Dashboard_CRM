@@ -1,0 +1,13 @@
+.task-form-page {
+  max-width: 62rem;
+}
+
+.task-form-panel {
+  padding: 1.25rem;
+}
+
+.task-form-page__description {
+  margin: 0 0 1rem;
+  color: #9cb0c6;
+  line-height: 1.55;
+}

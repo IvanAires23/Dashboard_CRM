@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { matchPath, Outlet, useLocation } from 'react-router-dom'
 import Header from '../components/layout/Header.jsx'
 import Sidebar from '../components/layout/Sidebar.jsx'
 import { appNavigation, privateRoutes } from '../routes/routeConfig.jsx'
@@ -8,7 +8,9 @@ import './layout.css'
 function AppLayout() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
   const location = useLocation()
-  const activeRoute = privateRoutes.find((route) => route.path === location.pathname)
+  const activeRoute = privateRoutes.find((route) =>
+    matchPath({ path: route.path, end: route.end ?? true }, location.pathname),
+  )
 
   return (
     <div className={`app-layout app-shell${isSidebarCollapsed ? ' is-sidebar-collapsed' : ''}`}>

@@ -1,0 +1,102 @@
+.account-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.account-form__grid {
+  display: grid;
+  gap: 0.95rem 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.account-form__field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.account-form__field label {
+  color: #9cb0c6;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.account-form__field input,
+.account-form__field select {
+  min-height: 2.7rem;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(11, 33, 50, 0.7);
+  color: #e6edf6;
+  padding: 0.58rem 0.72rem;
+  outline: none;
+}
+
+.account-form__field input::placeholder {
+  color: rgba(156, 176, 198, 0.74);
+}
+
+.account-form__field input:focus,
+.account-form__field select:focus {
+  border-color: rgba(45, 212, 191, 0.5);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18);
+}
+
+.account-form__error {
+  margin: 0;
+  color: #fda4af;
+  font-size: 0.78rem;
+}
+
+.account-form__feedback {
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.72rem;
+  font-size: 0.9rem;
+}
+
+.account-form__feedback--success {
+  color: #bbf7d0;
+  background: rgba(16, 185, 129, 0.16);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.account-form__feedback--error {
+  color: #fecdd3;
+  background: rgba(244, 63, 94, 0.16);
+  border: 1px solid rgba(244, 63, 94, 0.32);
+}
+
+.account-form__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.account-form__submit {
+  min-height: 2.7rem;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.3), rgba(14, 116, 144, 0.2));
+  color: #e8fffd;
+  padding: 0 1rem;
+  cursor: pointer;
+}
+
+.account-form__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .account-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-form__actions {
+    justify-content: stretch;
+  }
+
+  .account-form__submit {
+    width: 100%;
+  }
+}

@@ -1,0 +1,13 @@
+.contact-form-page {
+  max-width: 62rem;
+}
+
+.contact-form-panel {
+  padding: 1.25rem;
+}
+
+.contact-form-page__description {
+  margin: 0 0 1rem;
+  color: #9cb0c6;
+  line-height: 1.55;
+}

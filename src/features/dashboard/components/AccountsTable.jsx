@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import Badge from '../../../components/ui/Badge.jsx'
 import EmptyState from '../../../components/ui/EmptyState.jsx'
 import Pagination from '../../../components/ui/Pagination.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
@@ -13,11 +12,11 @@ function AccountsTable({ rows }) {
 
   return (
     <WidgetContainer
-      className="panel"
+      className="dashboard-panel"
       id="accounts"
       eyebrow="Accounts"
       title="High-value portfolio"
-      meta="Prioritized for success and expansion"
+      meta="Ranked by open pipeline value"
     >
       {rows.length ? (
         <>
@@ -26,24 +25,20 @@ function AccountsTable({ rows }) {
               <thead>
                 <tr>
                   <th>Account</th>
-                  <th>Owner</th>
-                  <th>Segment</th>
-                  <th>Health</th>
-                  <th>MRR</th>
+                  <th>Industry</th>
+                  <th>Open deals</th>
+                  <th>Pipeline value</th>
+                  <th>Contacts</th>
                 </tr>
               </thead>
               <tbody>
                 {visibleRows.map((row) => (
-                  <tr key={row.name}>
+                  <tr key={row.id || row.name}>
                     <td>{row.name}</td>
-                    <td>{row.owner}</td>
-                    <td>{row.segment}</td>
-                    <td>
-                      <Badge variant={row.health.toLowerCase()}>
-                        {row.health}
-                      </Badge>
-                    </td>
-                    <td>{row.mrr}</td>
+                    <td>{row.industry}</td>
+                    <td>{row.openDealCount}</td>
+                    <td>{row.pipelineValueLabel}</td>
+                    <td>{row.contactCount}</td>
                   </tr>
                 ))}
               </tbody>

@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   LogOut,
   Settings2,
+  UserPlus,
   UsersRound,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
@@ -17,6 +18,7 @@ import { useAuth } from '../../features/auth/useAuth.js'
 const navIcons = {
   Overview: LayoutDashboard,
   Deals: CircleDollarSign,
+  Leads: UserPlus,
   Accounts: Building2,
   Contacts: UsersRound,
   Tasks: CheckCheck,

@@ -1,0 +1,133 @@
+.task-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.task-form__grid {
+  display: grid;
+  gap: 0.95rem 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.task-form__field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.task-form__field--full {
+  grid-column: 1 / -1;
+}
+
+.task-form__field label {
+  color: #9cb0c6;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.task-form__field input,
+.task-form__field select,
+.task-form__field textarea {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(11, 33, 50, 0.7);
+  color: #e6edf6;
+  padding: 0.58rem 0.72rem;
+  outline: none;
+}
+
+.task-form__field input,
+.task-form__field select {
+  min-height: 2.7rem;
+}
+
+.task-form__field textarea {
+  min-height: 6.5rem;
+  resize: vertical;
+}
+
+.task-form__field input::placeholder,
+.task-form__field textarea::placeholder {
+  color: rgba(156, 176, 198, 0.74);
+}
+
+.task-form__field input:focus,
+.task-form__field select:focus,
+.task-form__field textarea:focus {
+  border-color: rgba(45, 212, 191, 0.5);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18);
+}
+
+.task-form__field select:disabled {
+  opacity: 0.64;
+  cursor: not-allowed;
+}
+
+.task-form__error {
+  margin: 0;
+  color: #fda4af;
+  font-size: 0.78rem;
+}
+
+.task-form__feedback {
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.72rem;
+  font-size: 0.9rem;
+}
+
+.task-form__feedback--success {
+  color: #bbf7d0;
+  background: rgba(16, 185, 129, 0.16);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.task-form__feedback--error {
+  color: #fecdd3;
+  background: rgba(244, 63, 94, 0.16);
+  border: 1px solid rgba(244, 63, 94, 0.32);
+}
+
+.task-form__feedback--warning {
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.task-form__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.task-form__submit {
+  min-height: 2.7rem;
+  border-radius: 0.8rem;
+  border: 1px solid rgba(45, 212, 191, 0.35);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.3), rgba(14, 116, 144, 0.2));
+  color: #e8fffd;
+  padding: 0 1rem;
+  cursor: pointer;
+}
+
+.task-form__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .task-form__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .task-form__field--full {
+    grid-column: auto;
+  }
+
+  .task-form__actions {
+    justify-content: stretch;
+  }
+
+  .task-form__submit {
+    width: 100%;
+  }
+}

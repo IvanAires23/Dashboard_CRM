@@ -1,154 +1,118 @@
-# CRM Dashboard Foundation
+# CRM Dashboard
 
-## Overview
+Frontend de um CRM moderno construído com React + Vite, com foco em experiência visual, navegação modular e base escalável para evolução de produto.
 
-This repository contains the frontend foundation for a CRM dashboard built with React and Vite.
+## Live Demo
 
-The project currently provides a polished dashboard-style interface and a validated frontend setup that is ready to evolve into a full CRM application. The current focus is to move from a static presentation layer into a real product with routing, state management, forms, data integration, authentication, and operational workflows.
+- Produção: **https://dashboard-crm-nu.vercel.app/#/login**
 
-## Main Purpose
+Credenciais de demonstração:
 
-The goal of this project is to become a professional CRM dashboard that helps teams manage:
+- Email: `email@email.com`
+- Senha: `123456`
 
-- sales pipeline visibility
-- account and customer health
-- revenue performance
-- task and activity tracking
-- future operational workflows such as leads, deals, contacts, and reporting
+## Objetivo do Projeto
 
-At this stage, the project serves as a clean starting point for engineering work rather than a complete CRM system.
+Este projeto serve como base para um painel CRM com estrutura pronta para evoluir para fluxos reais de negócio, incluindo:
 
-## Tech Stack
+- gestão de pipeline de vendas
+- visão de contas e contatos
+- organização de tarefas e agenda
+- permissões por perfil de usuário
+- integração progressiva com APIs
 
-- React
+## Stack Tecnológica
+
+- React 19
 - Vite
-- JavaScript
 - React Router DOM
 - Zustand
-- React Hook Form
-- Zod
+- TanStack Query
+- React Hook Form + Zod
 - Recharts
 - DnD Kit
-- Lucide React
-- date-fns
-- clsx
 - ESLint
 
-## Available Scripts
+## Scripts
 
-The main scripts defined in [package.json](./package.json) are:
+- `npm run dev`: inicia ambiente local de desenvolvimento
+- `npm run build`: gera build de produção
+- `npm run preview`: executa preview local da build
+- `npm run lint`: valida padrão de código
 
-- `npm install` installs project dependencies
-- `npm run dev` starts the local development server
-- `npm run build` creates the production build
-- `npm run preview` serves the production build locally
-- `npm run lint` runs the lint rules for the project
+## Setup Local
 
-## Getting Started
+### Pré-requisitos
 
-### Prerequisites
+- Node.js 20+
+- npm 10+
 
-- Node.js 20+ recommended
-- npm 10+ recommended
-
-### Local Setup
-
-1. Install dependencies:
+### Instalação
 
 ```bash
 npm install
 ```
 
-2. Configure environment variables:
+### Variáveis de Ambiente
 
-Create a local env file from the example and set your API URL.
+Crie o arquivo `.env.local` com base no `.env.example`.
 
-```bash
-cp .env.example .env.local
-```
-
-The shared HTTP layer reads:
-
-- `VITE_API_URL`
-- `VITE_AUTH_MOCK` (optional, defaults to `true` for local mocked login)
-
-Example:
+Exemplo:
 
 ```env
 VITE_API_URL=http://localhost:3000/api
 VITE_AUTH_MOCK=true
 ```
 
-3. Start the development server:
+### Executar Localmente
 
 ```bash
 npm run dev
 ```
 
-4. Open the local Vite URL shown in the terminal, typically:
+Aplicação local (padrão): `http://localhost:5173`
 
-```text
-http://localhost:5173
-```
+## Build e Deploy
 
-5. Build for production when needed:
+Build de produção:
 
 ```bash
 npm run build
 ```
 
-6. Preview the production build:
+Preview da build:
 
 ```bash
 npm run preview
 ```
 
-## Current Status
+Deploy recomendado: Vercel (preset `Vite`, output `dist`).
 
-The project is currently in an early frontend foundation stage.
+## Estrutura de Alto Nível
 
-What exists today:
+```text
+src/
+  app/          # shell, layout e providers globais
+  routes/       # configuração e proteção de rotas
+  features/     # módulos de domínio (dashboard, accounts, deals, etc.)
+  services/     # camada de acesso HTTP/API
+  components/   # componentes reutilizáveis de UI/layout
+  store/        # estado global (auth)
+```
 
-- Vite-based React application configured and validated
-- responsive CRM-style dashboard shell
-- project dependencies installed for routing, forms, validation, charts, drag-and-drop, icons, and utilities
-- lint and build workflow working correctly
-- cleaned repository structure with improved `.gitignore`
+## Status Atual
 
-What does not exist yet:
+O projeto está em estágio funcional de frontend, com:
 
-- real CRM routing structure
-- modular feature architecture
-- API integration layer
-- authentication and authorization
-- persistent global application state
-- production-grade forms and CRUD flows
-- automated unit and integration testing setup
+- interface e navegação principais implementadas
+- autenticação mock para fluxo de demonstração
+- módulos iniciais de CRM organizados por feature
+- pipeline de build/lint validado
 
-## Planned Architecture Direction
+## Roadmap
 
-The expected evolution of the project is:
-
-1. Introduce application routing and a shared layout shell.
-2. Break the current single-file dashboard into reusable components and feature modules.
-3. Add domain areas such as accounts, contacts, leads, deals, tasks, and settings.
-4. Add a data layer for API integration and async state handling.
-5. Implement authentication, protected routes, and user roles.
-6. Add validated forms using React Hook Form and Zod.
-7. Add charts, drag-and-drop workflows, filters, and table interactions.
-8. Add tests, reporting, and CI-oriented quality controls.
-
-## Next Steps
-
-Recommended immediate next steps for this repository:
-
-- create a scalable folder structure for app, routes, features, components, and services
-- add `react-router-dom` routing in the application entry flow
-- move dashboard data out of `App.jsx` into dedicated modules
-- create reusable UI primitives for cards, tables, sections, and layout
-- define the first CRM entities and mock service layer
-- introduce a testing strategy with unit and end-to-end coverage
-
-## Repository Scope
-
-This repository is focused on the frontend application layer. It should remain clean, readable, and ready for iterative engineering work as the CRM evolves.
+- persistência de sessão e auth real
+- integração completa com backend
+- CRUDs por módulo (accounts, contacts, deals, tasks)
+- testes automatizados (unitários e e2e)
+- observabilidade e hardening para produção
