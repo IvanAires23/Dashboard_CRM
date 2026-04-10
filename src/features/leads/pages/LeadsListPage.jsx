@@ -1,29 +1,34 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
+import { FilterBar, FilterSelect, FilterTextInput } from '../../../components/filters/index.js'
+import { DataTable, TableSkeleton } from '../../../components/table/index.js'
 import ErrorState from '../../../components/ui/ErrorState.jsx'
-import LoadingState from '../../../components/ui/LoadingState.jsx'
+import EntityEmptyState from '../../../components/ui/EntityEmptyState.jsx'
 import PageContainer from '../../../components/ui/PageContainer.jsx'
-import Pagination from '../../../components/ui/Pagination.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
+import { applyFilters, collectFilterOptions } from '../../../lib/filters/applyFilters.js'
+import { useConfirm } from '../../../lib/confirm/useConfirm.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import { deleteLead, getLeads } from '../../../services/leads.js'
-import {
-  extractCollection,
-  getPageRows,
-  getTotalPages,
-  matchesAnySearch,
-  resolveEntityId,
-} from '../../../lib/crm/entityUtils.js'
+import { extractCollection, resolveEntityId } from '../../../lib/crm/entityUtils.js'
+import { useLeadFilters } from '../hooks/useLeadFilters.js'
 import '../../../components/crud/crud.css'
 
 const PAGE_SIZE = 8
 
 function LeadsListPage() {
   const queryClient = useQueryClient()
-  const [currentPage, setCurrentPage] = useState(1)
-  const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
-  const [sourceFilter, setSourceFilter] = useState('all')
+  const confirm = useConfirm()
+  const toast = useToast()
+  const {
+    filters,
+    currentPage,
+    setCurrentPage,
+    setFilter,
+    setFilters,
+    resetFilters,
+  } = useLeadFilters()
 
   const leadsQuery = useQuery({
     queryKey: ['leads'],
@@ -34,68 +39,132 @@ function LeadsListPage() {
     mutationFn: deleteLead,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] })
+      toast.success('Lead deleted successfully.')
+    },
+    onError: (error) => {
+      toast.error(error?.message || 'Unable to delete lead right now. Please try again.')
     },
   })
 
   const rows = useMemo(() => extractCollection(leadsQuery.data), [leadsQuery.data])
 
   const filteredRows = useMemo(() => {
-    return rows.filter((row) => {
-      const matchesTerm = matchesAnySearch(row, search, [
+    return applyFilters(rows, {
+      searchTerm: filters.q,
+      searchSelectors: [
         (entry) => entry?.name,
         (entry) => entry?.email,
         (entry) => entry?.company,
         (entry) => entry?.phone,
-      ])
-      const matchesStatus = statusFilter === 'all' || String(row?.status || '').toLowerCase() === statusFilter
-      const matchesSource = sourceFilter === 'all' || String(row?.source || '').toLowerCase() === sourceFilter
-      return matchesTerm && matchesStatus && matchesSource
+      ],
+      equalFilters: [
+        {
+          value: filters.status,
+          selector: (entry) => entry?.status,
+          emptyValue: 'all',
+        },
+        {
+          value: filters.source,
+          selector: (entry) => entry?.source,
+          emptyValue: 'all',
+        },
+      ],
     })
-  }, [rows, search, statusFilter, sourceFilter])
+  }, [rows, filters])
 
   const statusOptions = useMemo(() => {
-    const values = new Set()
-    rows.forEach((row) => {
-      if (row?.status) {
-        values.add(String(row.status).toLowerCase())
-      }
-    })
-    return Array.from(values).sort((a, b) => a.localeCompare(b))
+    return collectFilterOptions(rows, (row) => row?.status)
   }, [rows])
 
   const sourceOptions = useMemo(() => {
-    const values = new Set()
-    rows.forEach((row) => {
-      if (row?.source) {
-        values.add(String(row.source).toLowerCase())
-      }
-    })
-    return Array.from(values).sort((a, b) => a.localeCompare(b))
+    return collectFilterOptions(rows, (row) => row?.source)
   }, [rows])
 
-  const totalPages = getTotalPages(filteredRows.length, PAGE_SIZE)
-  const effectiveCurrentPage = Math.min(currentPage, totalPages)
-  const pageRows = getPageRows(filteredRows, effectiveCurrentPage, PAGE_SIZE)
-  const startRow = filteredRows.length ? (effectiveCurrentPage - 1) * PAGE_SIZE + 1 : 0
-  const endRow = Math.min(effectiveCurrentPage * PAGE_SIZE, filteredRows.length)
+  const hasActiveFilters =
+    Boolean(filters.q) ||
+    filters.status !== 'all' ||
+    filters.source !== 'all'
 
   const handleDelete = async (leadId) => {
     if (!leadId || deleteMutation.isPending) {
       return
     }
 
-    const shouldDelete = window.confirm('Delete this lead? This action cannot be undone.')
-    if (!shouldDelete) {
+    const isConfirmed = await confirm({
+      title: 'Delete lead?',
+      description: 'This action permanently removes the lead and cannot be undone.',
+      confirmLabel: 'Delete lead',
+      cancelLabel: 'Cancel',
+      tone: 'danger',
+    })
+    if (!isConfirmed) {
       return
     }
 
     await deleteMutation.mutateAsync(leadId)
   }
 
+  const columns = [
+    {
+      id: 'name',
+      header: 'Name',
+      accessor: (row) => row?.name || 'â€”',
+      sortAccessor: (row) => row?.name ?? '',
+    },
+    {
+      id: 'email',
+      header: 'Email',
+      accessor: (row) => row?.email || 'â€”',
+      sortAccessor: (row) => row?.email ?? '',
+    },
+    {
+      id: 'company',
+      header: 'Company',
+      accessor: (row) => row?.company || 'â€”',
+      sortAccessor: (row) => row?.company ?? '',
+    },
+    {
+      id: 'status',
+      header: 'Status',
+      accessor: (row) => row?.status || 'â€”',
+      sortAccessor: (row) => row?.status ?? '',
+    },
+    {
+      id: 'source',
+      header: 'Source',
+      accessor: (row) => row?.source || 'â€”',
+      sortAccessor: (row) => row?.source ?? '',
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      sortable: false,
+      cell: (row) => {
+        const leadId = resolveEntityId(row)
+
+        return (
+          <div className="crud-table__actions">
+            {leadId ? <Link to={`/leads/${leadId}`}>View</Link> : null}
+            {leadId ? <Link to={`/leads/${leadId}/edit`}>Edit</Link> : null}
+            <button
+              type="button"
+              onClick={() => handleDelete(leadId)}
+              disabled={!leadId || deleteMutation.isPending}
+            >
+              Delete
+            </button>
+          </div>
+        )
+      },
+    },
+  ]
+
   if (leadsQuery.isPending) {
     return (
       <PageContainer>
-        <LoadingState eyebrow="Leads" title="Loading leads" description="Fetching lead records." />
+        <WidgetContainer eyebrow="Leads" title="Lead pipeline" meta="Loading records">
+          <TableSkeleton columns={6} rows={8} />
+        </WidgetContainer>
       </PageContainer>
     )
   }
@@ -106,7 +175,8 @@ function LeadsListPage() {
         <ErrorState
           eyebrow="Leads"
           title="Unable to load leads"
-          description={leadsQuery.error?.message || 'Please try again in a few seconds.'}
+          error={leadsQuery.error}
+          description="Please try again in a few seconds."
           onRetry={leadsQuery.refetch}
         />
       </PageContainer>
@@ -116,126 +186,72 @@ function LeadsListPage() {
   return (
     <PageContainer>
       <WidgetContainer eyebrow="Leads" title="Lead pipeline" meta={`${filteredRows.length} records`}>
-        <div className="crud-toolbar">
-          <div className="crud-toolbar__filters">
-            <div className="crud-toolbar__field">
-              <label htmlFor="lead-search">Search</label>
-              <input
-                id="lead-search"
-                type="search"
-                placeholder="Name, email, company..."
-                value={search}
-                onChange={(event) => {
-                  setCurrentPage(1)
-                  setSearch(event.target.value)
-                }}
-              />
-            </div>
-
-            <div className="crud-toolbar__field">
-              <label htmlFor="lead-status-filter">Status</label>
-              <select
-                id="lead-status-filter"
-                value={statusFilter}
-                onChange={(event) => {
-                  setCurrentPage(1)
-                  setStatusFilter(event.target.value)
-                }}
-              >
-                <option value="all">All statuses</option>
-                {statusOptions.map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="crud-toolbar__field">
-              <label htmlFor="lead-source-filter">Source</label>
-              <select
-                id="lead-source-filter"
-                value={sourceFilter}
-                onChange={(event) => {
-                  setCurrentPage(1)
-                  setSourceFilter(event.target.value)
-                }}
-              >
-                <option value="all">All sources</option>
-                {sourceOptions.map((source) => (
-                  <option key={source} value={source}>
-                    {source}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="crud-toolbar__actions">
+        <FilterBar
+          canClear={hasActiveFilters}
+          onClear={resetFilters}
+          actions={(
             <Link className="state-action" to="/leads/new">
               Create lead
             </Link>
-          </div>
-        </div>
-
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Company</th>
-                <th>Status</th>
-                <th>Source</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pageRows.length ? (
-                pageRows.map((row) => {
-                  const leadId = resolveEntityId(row)
-                  return (
-                    <tr key={leadId || `${row?.email || 'lead'}-${row?.name || ''}`}>
-                      <td>{row?.name || '—'}</td>
-                      <td>{row?.email || '—'}</td>
-                      <td>{row?.company || '—'}</td>
-                      <td>{row?.status || '—'}</td>
-                      <td>{row?.source || '—'}</td>
-                      <td>
-                        <div className="crud-table__actions">
-                          {leadId ? <Link to={`/leads/${leadId}`}>View</Link> : null}
-                          {leadId ? <Link to={`/leads/${leadId}/edit`}>Edit</Link> : null}
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(leadId)}
-                            disabled={!leadId || deleteMutation.isPending}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })
-              ) : (
-                <tr>
-                  <td colSpan={6}>No leads found for current filters.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="table-footer">
-          <p>
-            Showing {startRow}-{endRow} of {filteredRows.length} leads
-          </p>
-          <Pagination
-            currentPage={effectiveCurrentPage}
-            onPageChange={setCurrentPage}
-            totalPages={totalPages}
+          )}
+        >
+          <FilterTextInput
+            id="lead-search"
+            label="Search"
+            placeholder="Name, email, company..."
+            value={filters.q}
+            onChange={(value) => setFilter('q', value)}
           />
-        </div>
+
+          <FilterSelect
+            id="lead-status-filter"
+            label="Status"
+            allLabel="All statuses"
+            value={filters.status}
+            options={statusOptions}
+            onChange={(value) => setFilter('status', value)}
+          />
+
+          <FilterSelect
+            id="lead-source-filter"
+            label="Source"
+            allLabel="All sources"
+            value={filters.source}
+            options={sourceOptions}
+            onChange={(value) => setFilter('source', value)}
+          />
+        </FilterBar>
+
+        <DataTable
+          columns={columns}
+          rows={filteredRows}
+          rowKey={(row) => {
+            const leadId = resolveEntityId(row)
+            return leadId || `${row?.email || 'lead'}-${row?.name || ''}`
+          }}
+          sortConfig={{
+            columnId: filters.sortBy,
+            direction: filters.sortDir,
+          }}
+          onSortChange={(columnId, direction) => setFilters({ sortBy: columnId, sortDir: direction })}
+          pagination={{
+            currentPage,
+            pageSize: PAGE_SIZE,
+            onPageChange: setCurrentPage,
+          }}
+          entityLabel="leads"
+          emptyMessage="No leads found for current filters."
+          emptyState={(
+            <EntityEmptyState
+              entityLabel="leads"
+              hasFilters={hasActiveFilters}
+              onClearFilters={resetFilters}
+              createHref="/leads/new"
+              createLabel="Create lead"
+              eyebrow="Leads"
+            />
+          )}
+        />
       </WidgetContainer>
     </PageContainer>
   )

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useId, useMemo, useState } from 'react'
 import {
   closestCorners,
   DndContext,
@@ -20,6 +20,7 @@ function PipelineBoard({
   onDealStageChange = async () => {},
   isStageUpdating = false,
 }) {
+  const dragInstructionsId = useId()
   const [transientColumns, setTransientColumns] = useState(null)
   const [activeDealId, setActiveDealId] = useState('')
   const boardColumns = transientColumns ?? columns
@@ -93,10 +94,20 @@ function PipelineBoard({
         className={clsx('pipeline-board', isStageUpdating && 'pipeline-board--disabled')}
         role="list"
         aria-label="Sales pipeline board"
+        aria-describedby={dragInstructionsId}
+        aria-busy={isStageUpdating}
       >
+        <p className="sr-only" id={dragInstructionsId}>
+          To move a deal with keyboard, focus its move button, press space to pick it up, use arrow
+          keys to choose another stage, then press space again to drop.
+        </p>
         {boardColumns.map((column) => (
           <div key={column.stageId} role="listitem">
-            <PipelineColumn {...column} isDragDisabled={isStageUpdating} />
+            <PipelineColumn
+              {...column}
+              isDragDisabled={isStageUpdating}
+              dragInstructionsId={dragInstructionsId}
+            />
           </div>
         ))}
       </div>

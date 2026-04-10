@@ -1,0 +1,64 @@
+.app-error-page {
+  min-height: calc(100vh - 7rem);
+  place-items: center;
+}
+
+.app-error-page__card {
+  width: min(38rem, 100%);
+  padding: 1.4rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.app-error-page__card h1,
+.app-error-page__card p {
+  margin: 0;
+}
+
+.app-error-page__card h1 {
+  font-size: 1.45rem;
+  letter-spacing: -0.02em;
+  color: #f5f9ff;
+}
+
+.app-error-page__description {
+  color: #a2b6cc;
+  line-height: 1.55;
+}
+
+.app-error-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+.app-error-page__actions .state-action {
+  margin-top: 0;
+}
+
+.state-action--secondary {
+  border-color: rgba(148, 163, 184, 0.28);
+  background: rgba(148, 163, 184, 0.14);
+  color: #d9e5f1;
+}
+
+.app-error-page__details {
+  margin: 0.3rem 0 0;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 0.72rem;
+  padding: 0.7rem 0.85rem;
+  background: rgba(7, 15, 24, 0.65);
+  color: #fca5a5;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 720px) {
+  .app-error-page {
+    min-height: auto;
+  }
+}
+

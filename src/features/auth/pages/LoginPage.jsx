@@ -9,6 +9,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import FormFeedback from '../../../lib/forms/FormFeedback.jsx'
 import { useAsyncFormSubmission } from '../../../lib/forms/submission.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import { useZodForm } from '../../../lib/forms/useZodForm.js'
 import { loginDefaultValues, loginSchema } from '../schemas/loginSchema.js'
 import { useAuth } from '../useAuth.js'
@@ -16,6 +17,7 @@ import './LoginPage.css'
 
 function LoginPage() {
   const { signIn, isLoading } = useAuth()
+  const toast = useToast()
   const navigate = useNavigate()
   const {
     register,
@@ -36,7 +38,14 @@ function LoginPage() {
     errorMessage,
     executeSubmission,
   } = useAsyncFormSubmission({
+    successMessage: 'Signed in successfully.',
     defaultErrorMessage: 'Unable to sign in right now. Please try again.',
+    onSuccess: ({ message }) => {
+      toast.success(message || 'Signed in successfully.')
+    },
+    onError: ({ message }) => {
+      toast.error(message || 'Unable to sign in right now. Please try again.')
+    },
   })
   const isFormBusy = isLoading || isSubmitting || isSubmittingAsync
 

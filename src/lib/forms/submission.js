@@ -1,36 +1,11 @@
 import { useCallback, useRef, useState } from 'react'
-
-function getErrorMessage(error, fallbackMessage) {
-  if (!error) {
-    return fallbackMessage
-  }
-
-  if (typeof error === 'string' && error.trim()) {
-    return error
-  }
-
-  if (typeof error?.message === 'string' && error.message.trim()) {
-    return error.message
-  }
-
-  if (typeof error?.details === 'string' && error.details.trim()) {
-    return error.details
-  }
-
-  if (typeof error?.details?.message === 'string' && error.details.message.trim()) {
-    return error.details.message
-  }
-
-  if (typeof error?.details?.error === 'string' && error.details.error.trim()) {
-    return error.details.error
-  }
-
-  return fallbackMessage
-}
+import { normalizeError } from '../errors/normalizeError.js'
 
 export function useAsyncFormSubmission({
   successMessage = '',
   defaultErrorMessage = 'Unable to submit right now. Please try again.',
+  onSuccess,
+  onError,
 } = {}) {
   const isInFlightRef = useRef(false)
   const [isSubmittingAsync, setIsSubmittingAsync] = useState(false)
@@ -44,8 +19,15 @@ export function useAsyncFormSubmission({
 
   const setErrorMessage = useCallback((message) => {
     setCurrentSuccessMessage('')
-    setCurrentErrorMessage(message || defaultErrorMessage)
-  }, [defaultErrorMessage])
+    const resolvedMessage = message || defaultErrorMessage
+    setCurrentErrorMessage(resolvedMessage)
+    if (typeof onError === 'function') {
+      onError({
+        message: resolvedMessage,
+        error: null,
+      })
+    }
+  }, [defaultErrorMessage, onError])
 
   const executeSubmission = useCallback(
     async (submitter) => {
@@ -58,20 +40,37 @@ export function useAsyncFormSubmission({
       clearFeedback()
 
       try {
-        await submitter()
+        const result = await submitter()
         if (successMessage) {
           setCurrentSuccessMessage(successMessage)
         }
+        if (typeof onSuccess === 'function') {
+          onSuccess({
+            message: successMessage,
+            result,
+          })
+        }
         return true
       } catch (error) {
-        setCurrentErrorMessage(getErrorMessage(error, defaultErrorMessage))
+        const normalizedError = normalizeError(error, {
+          fallbackMessage: defaultErrorMessage,
+        })
+        const resolvedMessage = normalizedError.userMessage
+        setCurrentErrorMessage(resolvedMessage)
+        if (typeof onError === 'function') {
+          onError({
+            message: resolvedMessage,
+            error: normalizedError.originalError,
+            normalizedError,
+          })
+        }
         return false
       } finally {
         isInFlightRef.current = false
         setIsSubmittingAsync(false)
       }
     },
-    [clearFeedback, defaultErrorMessage, successMessage],
+    [clearFeedback, defaultErrorMessage, onError, onSuccess, successMessage],
   )
 
   return {

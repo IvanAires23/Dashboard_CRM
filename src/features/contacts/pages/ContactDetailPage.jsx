@@ -1,16 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import DetailSkeleton from '../../../components/ui/DetailSkeleton.jsx'
 import ErrorState from '../../../components/ui/ErrorState.jsx'
-import LoadingState from '../../../components/ui/LoadingState.jsx'
 import PageContainer from '../../../components/ui/PageContainer.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
 import { deleteContact, getContactById } from '../../../services/contacts.js'
 import { extractEntity, getDisplayValue, resolveEntityId } from '../../../lib/crm/entityUtils.js'
+import { useConfirm } from '../../../lib/confirm/useConfirm.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import '../../../components/crud/crud.css'
 
 function ContactDetailPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const confirm = useConfirm()
+  const toast = useToast()
   const { contactId } = useParams()
 
   const contactQuery = useQuery({
@@ -23,7 +27,11 @@ function ContactDetailPage() {
     mutationFn: deleteContact,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contacts'] })
+      toast.success('Contact deleted successfully.')
       navigate('/contacts', { replace: true })
+    },
+    onError: (error) => {
+      toast.error(error?.message || 'Unable to delete contact right now. Please try again.')
     },
   })
 
@@ -35,8 +43,14 @@ function ContactDetailPage() {
       return
     }
 
-    const shouldDelete = window.confirm('Delete this contact? This action cannot be undone.')
-    if (!shouldDelete) {
+    const isConfirmed = await confirm({
+      title: 'Delete contact?',
+      description: 'This action permanently removes the contact and cannot be undone.',
+      confirmLabel: 'Delete contact',
+      cancelLabel: 'Cancel',
+      tone: 'danger',
+    })
+    if (!isConfirmed) {
       return
     }
 
@@ -46,7 +60,9 @@ function ContactDetailPage() {
   if (contactQuery.isPending) {
     return (
       <PageContainer>
-        <LoadingState eyebrow="Contacts" title="Loading contact" description="Fetching contact details." />
+        <WidgetContainer eyebrow="Contacts" title="Contact details" meta="Loading record">
+          <DetailSkeleton fields={4} />
+        </WidgetContainer>
       </PageContainer>
     )
   }
@@ -57,7 +73,8 @@ function ContactDetailPage() {
         <ErrorState
           eyebrow="Contacts"
           title="Unable to load contact"
-          description={contactQuery.error?.message || 'Contact not found.'}
+          error={contactQuery.error}
+          description="Contact not found."
           onRetry={contactQuery.refetch}
         />
       </PageContainer>

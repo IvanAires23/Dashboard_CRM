@@ -8,12 +8,14 @@ import {
   CircleDollarSign,
   LayoutDashboard,
   LogOut,
+  X,
   Settings2,
   UserPlus,
   UsersRound,
 } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../features/auth/useAuth.js'
+import { useToast } from '../../lib/toast/useToast.js'
 
 const navIcons = {
   Overview: LayoutDashboard,
@@ -26,9 +28,17 @@ const navIcons = {
   Settings: Settings2,
 }
 
-function Sidebar({ isCollapsed, navigationItems, onToggle }) {
+function Sidebar({
+  isCollapsed,
+  isMobileViewport = false,
+  isMobileOpen = false,
+  navigationItems,
+  onToggle,
+  onCloseMobile = () => {},
+}) {
   const [isSigningOut, setIsSigningOut] = useState(false)
   const navigate = useNavigate()
+  const toast = useToast()
   const { signOut, user } = useAuth()
 
   const userInitials = (user?.name || user?.email || 'IA')
@@ -47,27 +57,46 @@ function Sidebar({ isCollapsed, navigationItems, onToggle }) {
 
     try {
       await signOut()
+      toast.info('Signed out successfully.')
       navigate('/login', { replace: true })
+    } catch (error) {
+      toast.error(error?.message || 'Unable to sign out right now. Please try again.')
     } finally {
       setIsSigningOut(false)
     }
   }
 
   return (
-    <aside className={`sidebar${isCollapsed ? ' sidebar--collapsed' : ''}`}>
+    <aside
+      className={`sidebar${isCollapsed ? ' sidebar--collapsed' : ''}${isMobileViewport ? ' sidebar--mobile' : ''}${isMobileOpen ? ' sidebar--mobile-open' : ''}`}
+      aria-label="Primary navigation"
+    >
       <div className="sidebar-brand">
         <div className="brand-mark">C</div>
         {!isCollapsed ? <span className="brand-name">Customer Room</span> : null}
+
+        {isMobileViewport ? (
+          <button
+            type="button"
+            className="sidebar-close"
+            aria-label="Close navigation menu"
+            onClick={onCloseMobile}
+          >
+            <X size={16} strokeWidth={2.2} />
+          </button>
+        ) : null}
       </div>
 
-      <button
-        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        className="sidebar-toggle"
-        onClick={onToggle}
-        type="button"
-      >
-        {isCollapsed ? <ChevronRight size={16} strokeWidth={2.2} /> : <ChevronLeft size={16} strokeWidth={2.2} />}
-      </button>
+      {!isMobileViewport ? (
+        <button
+          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          className="sidebar-toggle"
+          onClick={onToggle}
+          type="button"
+        >
+          {isCollapsed ? <ChevronRight size={16} strokeWidth={2.2} /> : <ChevronLeft size={16} strokeWidth={2.2} />}
+        </button>
+      ) : null}
 
       <nav className="sidebar-nav" aria-label="Primary">
         {navigationItems.map((item) => {
@@ -81,6 +110,7 @@ function Sidebar({ isCollapsed, navigationItems, onToggle }) {
               end={item.end}
               title={item.label}
               aria-label={item.label}
+              onClick={isMobileViewport ? onCloseMobile : undefined}
             >
               <span className="nav-item__icon">
                 <Icon size={18} strokeWidth={2.1} />

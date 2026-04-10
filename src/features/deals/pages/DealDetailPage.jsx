@@ -1,16 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import DetailSkeleton from '../../../components/ui/DetailSkeleton.jsx'
 import ErrorState from '../../../components/ui/ErrorState.jsx'
-import LoadingState from '../../../components/ui/LoadingState.jsx'
 import PageContainer from '../../../components/ui/PageContainer.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
 import { deleteDeal, getDealById } from '../../../services/deals.js'
 import { extractEntity, getDisplayValue, resolveEntityId } from '../../../lib/crm/entityUtils.js'
+import { useConfirm } from '../../../lib/confirm/useConfirm.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import '../../../components/crud/crud.css'
 
 function DealDetailPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const confirm = useConfirm()
+  const toast = useToast()
   const { dealId } = useParams()
 
   const dealQuery = useQuery({
@@ -23,7 +27,11 @@ function DealDetailPage() {
     mutationFn: deleteDeal,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['deals'] })
+      toast.success('Deal deleted successfully.')
       navigate('/deals', { replace: true })
+    },
+    onError: (error) => {
+      toast.error(error?.message || 'Unable to delete deal right now. Please try again.')
     },
   })
 
@@ -35,8 +43,14 @@ function DealDetailPage() {
       return
     }
 
-    const shouldDelete = window.confirm('Delete this deal? This action cannot be undone.')
-    if (!shouldDelete) {
+    const isConfirmed = await confirm({
+      title: 'Delete deal?',
+      description: 'This action permanently removes the deal and cannot be undone.',
+      confirmLabel: 'Delete deal',
+      cancelLabel: 'Cancel',
+      tone: 'danger',
+    })
+    if (!isConfirmed) {
       return
     }
 
@@ -46,7 +60,9 @@ function DealDetailPage() {
   if (dealQuery.isPending) {
     return (
       <PageContainer>
-        <LoadingState eyebrow="Deals" title="Loading deal" description="Fetching deal details." />
+        <WidgetContainer eyebrow="Deals" title="Deal details" meta="Loading record">
+          <DetailSkeleton fields={6} />
+        </WidgetContainer>
       </PageContainer>
     )
   }
@@ -57,7 +73,8 @@ function DealDetailPage() {
         <ErrorState
           eyebrow="Deals"
           title="Unable to load deal"
-          description={dealQuery.error?.message || 'Deal not found.'}
+          error={dealQuery.error}
+          description="Deal not found."
           onRetry={dealQuery.refetch}
         />
       </PageContainer>

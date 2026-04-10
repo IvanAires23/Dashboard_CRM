@@ -11,6 +11,7 @@ function DealCardContent({
   dragHandleProps,
   overlay = false,
   disabled = false,
+  dragInstructionsId,
 }) {
   return (
     <article className={clsx('deal-card', className)} data-deal-id={deal.id} style={style}>
@@ -23,6 +24,7 @@ function DealCardContent({
             type="button"
             className="deal-card__drag-handle"
             aria-label={`Move ${deal.title}`}
+            aria-describedby={dragInstructionsId}
             disabled={disabled}
             {...dragHandleProps}
           >
@@ -62,7 +64,7 @@ function DealCardContent({
   )
 }
 
-function SortableDealCard({ deal, disabled = false }) {
+function SortableDealCard({ deal, disabled = false, dragInstructionsId }) {
   const {
     attributes,
     listeners,
@@ -96,23 +98,37 @@ function SortableDealCard({ deal, disabled = false }) {
           ...listeners,
         }}
         disabled={disabled}
+        dragInstructionsId={dragInstructionsId}
       />
     </div>
   )
 }
 
-function DealCard({ deal, sortable = true, disabled = false, overlay = false }) {
+function DealCard({
+  deal,
+  sortable = true,
+  disabled = false,
+  overlay = false,
+  dragInstructionsId,
+}) {
   if (!sortable) {
     return (
       <DealCardContent
         deal={deal}
         overlay={overlay}
         className={clsx(overlay && 'deal-card--overlay')}
+        dragInstructionsId={dragInstructionsId}
       />
     )
   }
 
-  return <SortableDealCard deal={deal} disabled={disabled} />
+  return (
+    <SortableDealCard
+      deal={deal}
+      disabled={disabled}
+      dragInstructionsId={dragInstructionsId}
+    />
+  )
 }
 
 export default DealCard

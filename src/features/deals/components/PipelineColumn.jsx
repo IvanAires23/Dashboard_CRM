@@ -9,6 +9,7 @@ function PipelineColumn({
   deals = [],
   totalValueLabel,
   isDragDisabled = false,
+  dragInstructionsId,
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: stageId,
@@ -28,14 +29,14 @@ function PipelineColumn({
     >
       <header className="pipeline-column__header">
         <div className="pipeline-column__title-row">
-          <h3 className="pipeline-column__title">{label}</h3>
+          <h3 className="pipeline-column__title" id={`pipeline-stage-${stageId}`}>{label}</h3>
           <span className="pipeline-column__count">{deals.length} deals</span>
         </div>
         <p className="pipeline-column__value">{totalValueLabel}</p>
       </header>
 
       <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
-        <div className="pipeline-column__cards">
+        <div className="pipeline-column__cards" aria-labelledby={`pipeline-stage-${stageId}`}>
           {deals.length ? (
             deals.map((deal) => (
               <DealCard
@@ -43,6 +44,7 @@ function PipelineColumn({
                 deal={deal}
                 sortable={!isDragDisabled}
                 disabled={isDragDisabled}
+                dragInstructionsId={dragInstructionsId}
               />
             ))
           ) : (

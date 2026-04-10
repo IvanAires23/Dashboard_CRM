@@ -23,7 +23,7 @@ const iconByCardId = {
   'forecast-value': Target,
 }
 
-function KpiCards({ cards = [] }) {
+function KpiCards({ cards = [], compact = false }) {
   if (!cards.length) {
     return (
       <EmptyState
@@ -38,7 +38,7 @@ function KpiCards({ cards = [] }) {
     <section className="dashboard-kpi-grid" aria-label="CRM KPI cards">
       {cards.map((card) => {
         const Icon = iconByCardId[card.id] ?? BarChart3
-        return <KpiCard key={card.id} {...card} icon={Icon} />
+        return <KpiCard key={card.id} {...card} icon={Icon} compact={compact} />
       })}
     </section>
   )

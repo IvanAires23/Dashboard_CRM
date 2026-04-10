@@ -6,10 +6,16 @@
   align-items: start;
   overflow-x: auto;
   padding-bottom: 0.25rem;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
 }
 
 .pipeline-board--disabled {
   opacity: 0.82;
+}
+
+.pipeline-board--skeleton {
+  pointer-events: none;
 }
 
 .pipeline-column {
@@ -20,6 +26,7 @@
   display: grid;
   gap: 0.75rem;
   min-height: 17rem;
+  scroll-snap-align: start;
 }
 
 .pipeline-column--over {
@@ -85,6 +92,46 @@
   gap: 0.6rem;
 }
 
+.deal-card--skeleton {
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.pipeline-skeleton__title {
+  width: min(100%, 6rem);
+  height: 0.9rem;
+}
+
+.pipeline-skeleton__count {
+  width: 4.2rem;
+  height: 0.7rem;
+}
+
+.pipeline-skeleton__value {
+  width: min(100%, 6.5rem);
+  height: 0.75rem;
+}
+
+.pipeline-skeleton__card-title {
+  width: min(100%, 8rem);
+  height: 0.9rem;
+}
+
+.pipeline-skeleton__drag-handle {
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 0.55rem;
+}
+
+.pipeline-skeleton__card-value {
+  width: min(100%, 5rem);
+  height: 1rem;
+}
+
+.pipeline-skeleton__card-meta {
+  width: 100%;
+  height: 0.72rem;
+}
+
 .deal-card--dragging {
   opacity: 0.45;
 }
@@ -121,6 +168,10 @@
   color: #9fe8f0;
 }
 
+.deal-card__title a:focus-visible {
+  border-radius: 0.45rem;
+}
+
 .deal-card__drag-handle {
   width: 1.8rem;
   height: 1.8rem;
@@ -135,6 +186,11 @@
 
 .deal-card__drag-handle:active {
   cursor: grabbing;
+}
+
+.deal-card__drag-handle:focus-visible {
+  border-color: rgba(45, 212, 191, 0.45);
+  background: rgba(14, 116, 144, 0.26);
 }
 
 .deal-card__value {
@@ -175,6 +231,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.65rem;
+  flex-wrap: wrap;
 }
 
 .deal-card__actions a {
@@ -185,4 +242,10 @@
 
 .deal-card__actions a:hover {
   color: #d5edf9;
+}
+
+@media (max-width: 960px) {
+  .pipeline-board {
+    grid-auto-columns: minmax(17rem, 80vw);
+  }
 }

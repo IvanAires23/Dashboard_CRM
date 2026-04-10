@@ -1,28 +1,34 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
+import { FilterBar, FilterSelect, FilterTextInput } from '../../../components/filters/index.js'
+import { DataTable, TableSkeleton } from '../../../components/table/index.js'
 import ErrorState from '../../../components/ui/ErrorState.jsx'
-import LoadingState from '../../../components/ui/LoadingState.jsx'
+import EntityEmptyState from '../../../components/ui/EntityEmptyState.jsx'
 import PageContainer from '../../../components/ui/PageContainer.jsx'
-import Pagination from '../../../components/ui/Pagination.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
+import { applyFilters, collectFilterOptions } from '../../../lib/filters/applyFilters.js'
+import { useConfirm } from '../../../lib/confirm/useConfirm.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import { deleteAccount, getAccounts } from '../../../services/accounts.js'
-import {
-  extractCollection,
-  getPageRows,
-  getTotalPages,
-  matchesAnySearch,
-  resolveEntityId,
-} from '../../../lib/crm/entityUtils.js'
+import { extractCollection, resolveEntityId } from '../../../lib/crm/entityUtils.js'
+import { useAccountFilters } from '../hooks/useAccountFilters.js'
 import '../../../components/crud/crud.css'
 
 const PAGE_SIZE = 8
 
 function AccountsListPage() {
   const queryClient = useQueryClient()
-  const [currentPage, setCurrentPage] = useState(1)
-  const [search, setSearch] = useState('')
-  const [industryFilter, setIndustryFilter] = useState('all')
+  const confirm = useConfirm()
+  const toast = useToast()
+  const {
+    filters,
+    currentPage,
+    setCurrentPage,
+    setFilter,
+    setFilters,
+    resetFilters,
+  } = useAccountFilters()
 
   const accountsQuery = useQuery({
     queryKey: ['accounts'],
@@ -33,58 +39,113 @@ function AccountsListPage() {
     mutationFn: deleteAccount,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] })
+      toast.success('Account deleted successfully.')
+    },
+    onError: (error) => {
+      toast.error(error?.message || 'Unable to delete account right now. Please try again.')
     },
   })
 
   const rows = useMemo(() => extractCollection(accountsQuery.data), [accountsQuery.data])
 
   const filteredRows = useMemo(() => {
-    return rows.filter((row) => {
-      const matchesTerm = matchesAnySearch(row, search, [
+    return applyFilters(rows, {
+      searchTerm: filters.q,
+      searchSelectors: [
         (entry) => entry?.name,
         (entry) => entry?.industry ?? entry?.segment,
         (entry) => entry?.website ?? entry?.url,
-      ])
-      const rowIndustry = String(row?.industry ?? row?.segment ?? '').toLowerCase()
-      const matchesIndustry = industryFilter === 'all' || rowIndustry === industryFilter
-      return matchesTerm && matchesIndustry
+      ],
+      equalFilters: [
+        {
+          value: filters.industry,
+          selector: (entry) => entry?.industry ?? entry?.segment,
+          emptyValue: 'all',
+        },
+      ],
     })
-  }, [rows, search, industryFilter])
+  }, [rows, filters])
 
   const industryOptions = useMemo(() => {
-    const values = new Set()
-    rows.forEach((row) => {
-      const nextValue = row?.industry ?? row?.segment
-      if (nextValue) {
-        values.add(String(nextValue).toLowerCase())
-      }
-    })
-    return Array.from(values).sort((a, b) => a.localeCompare(b))
+    return collectFilterOptions(rows, (row) => row?.industry ?? row?.segment)
   }, [rows])
 
-  const totalPages = getTotalPages(filteredRows.length, PAGE_SIZE)
-  const effectiveCurrentPage = Math.min(currentPage, totalPages)
-  const pageRows = getPageRows(filteredRows, effectiveCurrentPage, PAGE_SIZE)
-  const startRow = filteredRows.length ? (effectiveCurrentPage - 1) * PAGE_SIZE + 1 : 0
-  const endRow = Math.min(effectiveCurrentPage * PAGE_SIZE, filteredRows.length)
+  const hasActiveFilters = Boolean(filters.q) || filters.industry !== 'all'
 
   const handleDelete = async (accountId) => {
     if (!accountId || deleteMutation.isPending) {
       return
     }
 
-    const shouldDelete = window.confirm('Delete this account? This action cannot be undone.')
-    if (!shouldDelete) {
+    const isConfirmed = await confirm({
+      title: 'Delete account?',
+      description: 'This action permanently removes the account and cannot be undone.',
+      confirmLabel: 'Delete account',
+      cancelLabel: 'Cancel',
+      tone: 'danger',
+    })
+    if (!isConfirmed) {
       return
     }
 
     await deleteMutation.mutateAsync(accountId)
   }
 
+  const columns = [
+    {
+      id: 'name',
+      header: 'Name',
+      accessor: (row) => row?.name || 'â€”',
+      sortAccessor: (row) => row?.name ?? '',
+    },
+    {
+      id: 'industry',
+      header: 'Industry',
+      accessor: (row) => row?.industry ?? row?.segment ?? 'â€”',
+      sortAccessor: (row) => row?.industry ?? row?.segment ?? '',
+    },
+    {
+      id: 'size',
+      header: 'Size',
+      accessor: (row) => row?.size ?? row?.employeeCount ?? row?.employees ?? 'â€”',
+      sortAccessor: (row) => row?.size ?? row?.employeeCount ?? row?.employees ?? '',
+    },
+    {
+      id: 'website',
+      header: 'Website',
+      accessor: (row) => row?.website ?? row?.url ?? 'â€”',
+      sortAccessor: (row) => row?.website ?? row?.url ?? '',
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      sortable: false,
+      cell: (row) => {
+        const accountId = resolveEntityId(row)
+
+        return (
+          <div className="crud-table__actions">
+            {accountId ? <Link to={`/accounts/${accountId}`}>View</Link> : null}
+            {accountId ? <Link to={`/accounts/${accountId}/edit`}>Edit</Link> : null}
+            <button
+              type="button"
+              onClick={() => handleDelete(accountId)}
+              disabled={!accountId || deleteMutation.isPending}
+            >
+              Delete
+            </button>
+          </div>
+        )
+      },
+    },
+  ]
+
   if (accountsQuery.isPending) {
     return (
       <PageContainer>
-        <LoadingState eyebrow="Accounts" title="Loading accounts" description="Fetching account records." />
+        <WidgetContainer eyebrow="Accounts" title="Account directory" meta="Loading records">
+          <TableSkeleton columns={5} rows={8} />
+        </WidgetContainer>
       </PageContainer>
     )
   }
@@ -95,7 +156,8 @@ function AccountsListPage() {
         <ErrorState
           eyebrow="Accounts"
           title="Unable to load accounts"
-          description={accountsQuery.error?.message || 'Please try again in a few seconds.'}
+          error={accountsQuery.error}
+          description="Please try again in a few seconds."
           onRetry={accountsQuery.refetch}
         />
       </PageContainer>
@@ -105,105 +167,63 @@ function AccountsListPage() {
   return (
     <PageContainer>
       <WidgetContainer eyebrow="Accounts" title="Account directory" meta={`${filteredRows.length} records`}>
-        <div className="crud-toolbar">
-          <div className="crud-toolbar__filters">
-            <div className="crud-toolbar__field">
-              <label htmlFor="account-search">Search</label>
-              <input
-                id="account-search"
-                type="search"
-                placeholder="Name, industry, website..."
-                value={search}
-                onChange={(event) => {
-                  setCurrentPage(1)
-                  setSearch(event.target.value)
-                }}
-              />
-            </div>
-
-            <div className="crud-toolbar__field">
-              <label htmlFor="account-industry-filter">Industry</label>
-              <select
-                id="account-industry-filter"
-                value={industryFilter}
-                onChange={(event) => {
-                  setCurrentPage(1)
-                  setIndustryFilter(event.target.value)
-                }}
-              >
-                <option value="all">All industries</option>
-                {industryOptions.map((industry) => (
-                  <option key={industry} value={industry}>
-                    {industry}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="crud-toolbar__actions">
+        <FilterBar
+          canClear={hasActiveFilters}
+          onClear={resetFilters}
+          actions={(
             <Link className="state-action" to="/accounts/new">
               Create account
             </Link>
-          </div>
-        </div>
-
-        <div className="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Industry</th>
-                <th>Size</th>
-                <th>Website</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pageRows.length ? (
-                pageRows.map((row) => {
-                  const accountId = resolveEntityId(row)
-                  return (
-                    <tr key={accountId || `${row?.name || 'account'}-${row?.website || ''}`}>
-                      <td>{row?.name || '—'}</td>
-                      <td>{row?.industry ?? row?.segment ?? '—'}</td>
-                      <td>{row?.size ?? row?.employeeCount ?? row?.employees ?? '—'}</td>
-                      <td>{row?.website ?? row?.url ?? '—'}</td>
-                      <td>
-                        <div className="crud-table__actions">
-                          {accountId ? <Link to={`/accounts/${accountId}`}>View</Link> : null}
-                          {accountId ? <Link to={`/accounts/${accountId}/edit`}>Edit</Link> : null}
-                          <button
-                            type="button"
-                            onClick={() => handleDelete(accountId)}
-                            disabled={!accountId || deleteMutation.isPending}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })
-              ) : (
-                <tr>
-                  <td colSpan={5}>No accounts found for current filters.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="table-footer">
-          <p>
-            Showing {startRow}-{endRow} of {filteredRows.length} accounts
-          </p>
-          <Pagination
-            currentPage={effectiveCurrentPage}
-            onPageChange={setCurrentPage}
-            totalPages={totalPages}
+          )}
+        >
+          <FilterTextInput
+            id="account-search"
+            label="Search"
+            placeholder="Name, industry, website..."
+            value={filters.q}
+            onChange={(value) => setFilter('q', value)}
           />
-        </div>
+
+          <FilterSelect
+            id="account-industry-filter"
+            label="Industry"
+            allLabel="All industries"
+            value={filters.industry}
+            options={industryOptions}
+            onChange={(value) => setFilter('industry', value)}
+          />
+        </FilterBar>
+
+        <DataTable
+          columns={columns}
+          rows={filteredRows}
+          rowKey={(row) => {
+            const accountId = resolveEntityId(row)
+            return accountId || `${row?.name || 'account'}-${row?.website || ''}`
+          }}
+          sortConfig={{
+            columnId: filters.sortBy,
+            direction: filters.sortDir,
+          }}
+          onSortChange={(columnId, direction) => setFilters({ sortBy: columnId, sortDir: direction })}
+          pagination={{
+            currentPage,
+            pageSize: PAGE_SIZE,
+            onPageChange: setCurrentPage,
+          }}
+          entityLabel="accounts"
+          emptyMessage="No accounts found for current filters."
+          emptyState={(
+            <EntityEmptyState
+              entityLabel="accounts"
+              hasFilters={hasActiveFilters}
+              onClearFilters={resetFilters}
+              createHref="/accounts/new"
+              createLabel="Create account"
+              eyebrow="Accounts"
+            />
+          )}
+        />
       </WidgetContainer>
     </PageContainer>
   )

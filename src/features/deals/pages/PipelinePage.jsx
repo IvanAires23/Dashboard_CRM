@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import ErrorState from '../../../components/ui/ErrorState.jsx'
+import EntityEmptyState from '../../../components/ui/EntityEmptyState.jsx'
 import LoadingState from '../../../components/ui/LoadingState.jsx'
 import PageContainer from '../../../components/ui/PageContainer.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
@@ -9,6 +10,7 @@ import { extractCollection } from '../../../lib/crm/entityUtils.js'
 import { useMoveDealStage } from '../api/useMoveDealStage.js'
 import { getDeals } from '../../../services/deals.js'
 import PipelineBoard from '../components/PipelineBoard.jsx'
+import PipelineSkeleton from '../components/PipelineSkeleton.jsx'
 import { groupDealsByStage } from '../lib/groupDealsByStage.js'
 import { DEAL_PIPELINE_STAGES } from '../schemas/dealSchema.js'
 import './PipelinePage.css'
@@ -37,11 +39,14 @@ function PipelinePage() {
   if (dealsQuery.isPending) {
     return (
       <PageContainer className="pipeline-page">
-        <LoadingState
+        <WidgetContainer
+          className="pipeline-page__panel"
           eyebrow="Deals"
-          title="Loading pipeline board"
-          description="Fetching deals and grouping opportunities by stage."
-        />
+          title="Sales pipeline board"
+          meta="Loading deals"
+        >
+          <PipelineSkeleton columns={DEAL_PIPELINE_STAGES.length} cardsPerColumn={3} />
+        </WidgetContainer>
       </PageContainer>
     )
   }
@@ -52,7 +57,8 @@ function PipelinePage() {
         <ErrorState
           eyebrow="Deals"
           title="Unable to load pipeline board"
-          description={dealsQuery.error?.message || 'Please try again in a few seconds.'}
+          error={dealsQuery.error}
+          description="Please try again in a few seconds."
           onRetry={dealsQuery.refetch}
         />
       </PageContainer>
@@ -77,8 +83,8 @@ function PipelinePage() {
         meta={`${rows.length} deals`}
       >
         <p className="pipeline-page__intro">
-          Visual flow of opportunities across shared pipeline stages. Structure is prepared for
-          drag-and-drop stage movement in the next step.
+          Visual flow of opportunities across shared pipeline stages. Drag deals between columns to
+          update stage movement quickly.
         </p>
 
         <div className="pipeline-page__toolbar">
@@ -104,15 +110,27 @@ function PipelinePage() {
             contained={false}
             eyebrow="Deals"
             title="Unable to move deal"
-            description={moveStageMutation.error?.message || 'Please retry moving the deal.'}
+            error={moveStageMutation.error}
+            description="Please retry moving the deal."
           />
         ) : null}
 
-        <PipelineBoard
-          columns={stageColumns}
-          isStageUpdating={moveStageMutation.isPending}
-          onDealStageChange={handleMoveDealStage}
-        />
+        {rows.length ? (
+          <PipelineBoard
+            columns={stageColumns}
+            isStageUpdating={moveStageMutation.isPending}
+            onDealStageChange={handleMoveDealStage}
+          />
+        ) : (
+          <EntityEmptyState
+            entityLabel="deals"
+            title="No deals in pipeline yet"
+            description="Create your first deal to populate the board and start tracking stage movement."
+            createHref="/deals/new"
+            createLabel="Create deal"
+            eyebrow="Pipeline"
+          />
+        )}
       </WidgetContainer>
     </PageContainer>
   )

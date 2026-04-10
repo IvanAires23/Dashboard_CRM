@@ -1,16 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import DetailSkeleton from '../../../components/ui/DetailSkeleton.jsx'
 import ErrorState from '../../../components/ui/ErrorState.jsx'
-import LoadingState from '../../../components/ui/LoadingState.jsx'
 import PageContainer from '../../../components/ui/PageContainer.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
 import { deleteLead, getLeadById } from '../../../services/leads.js'
 import { extractEntity, getDisplayValue, resolveEntityId } from '../../../lib/crm/entityUtils.js'
+import { useConfirm } from '../../../lib/confirm/useConfirm.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import '../../../components/crud/crud.css'
 
 function LeadDetailPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const confirm = useConfirm()
+  const toast = useToast()
   const { leadId } = useParams()
 
   const leadQuery = useQuery({
@@ -23,7 +27,11 @@ function LeadDetailPage() {
     mutationFn: deleteLead,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] })
+      toast.success('Lead deleted successfully.')
       navigate('/leads', { replace: true })
+    },
+    onError: (error) => {
+      toast.error(error?.message || 'Unable to delete lead right now. Please try again.')
     },
   })
 
@@ -35,8 +43,14 @@ function LeadDetailPage() {
       return
     }
 
-    const shouldDelete = window.confirm('Delete this lead? This action cannot be undone.')
-    if (!shouldDelete) {
+    const isConfirmed = await confirm({
+      title: 'Delete lead?',
+      description: 'This action permanently removes the lead and cannot be undone.',
+      confirmLabel: 'Delete lead',
+      cancelLabel: 'Cancel',
+      tone: 'danger',
+    })
+    if (!isConfirmed) {
       return
     }
 
@@ -46,7 +60,9 @@ function LeadDetailPage() {
   if (leadQuery.isPending) {
     return (
       <PageContainer>
-        <LoadingState eyebrow="Leads" title="Loading lead" description="Fetching lead details." />
+        <WidgetContainer eyebrow="Leads" title="Lead details" meta="Loading record">
+          <DetailSkeleton fields={6} />
+        </WidgetContainer>
       </PageContainer>
     )
   }
@@ -57,7 +73,8 @@ function LeadDetailPage() {
         <ErrorState
           eyebrow="Leads"
           title="Unable to load lead"
-          description={leadQuery.error?.message || 'Lead not found.'}
+          error={leadQuery.error}
+          description="Lead not found."
           onRetry={leadQuery.refetch}
         />
       </PageContainer>

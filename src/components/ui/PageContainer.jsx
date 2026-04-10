@@ -2,7 +2,7 @@ import { createElement } from 'react'
 import clsx from 'clsx'
 import './ui.css'
 
-function PageContainer({ as = 'main', className, children, ...props }) {
+function PageContainer({ as = 'section', className, children, ...props }) {
   return createElement(
     as,
     {

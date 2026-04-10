@@ -2,11 +2,11 @@ import { BarChart3 } from 'lucide-react'
 import { createElement } from 'react'
 import Card from '../../../components/ui/Card.jsx'
 
-function KpiCard({ label, value, meta, note, icon = BarChart3 }) {
+function KpiCard({ label, value, meta, icon = BarChart3, compact = false }) {
   const IconComponent = icon
 
   return (
-    <Card as="article" className="dashboard-kpi-card">
+    <Card as="article" className={`dashboard-kpi-card${compact ? ' dashboard-kpi-card--compact' : ''}`}>
       <div className="dashboard-kpi-card__header">
         <span className="dashboard-kpi-card__icon">
           {createElement(IconComponent, {
@@ -19,10 +19,11 @@ function KpiCard({ label, value, meta, note, icon = BarChart3 }) {
           <strong>{value}</strong>
         </div>
       </div>
-      <div className="dashboard-kpi-card__footer">
-        <small>{meta}</small>
-        <p>{note}</p>
-      </div>
+      {meta ? (
+        <div className="dashboard-kpi-card__footer">
+          <small>{meta}</small>
+        </div>
+      ) : null}
     </Card>
   )
 }

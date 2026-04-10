@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import EmptyState from '../../../components/ui/EmptyState.jsx'
 import Pagination from '../../../components/ui/Pagination.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
 
 function AccountsTable({ rows }) {
+  const tableId = useId()
   const rowsPerPage = 4
   const totalPages = Math.ceil(rows.length / rowsPerPage)
   const [currentPage, setCurrentPage] = useState(1)
@@ -21,7 +22,8 @@ function AccountsTable({ rows }) {
       {rows.length ? (
         <>
           <div className="table-wrap">
-            <table>
+            <table id={tableId} aria-label="Accounts portfolio table">
+              <caption className="sr-only">High-value accounts portfolio</caption>
               <thead>
                 <tr>
                   <th>Account</th>
@@ -34,7 +36,7 @@ function AccountsTable({ rows }) {
               <tbody>
                 {visibleRows.map((row) => (
                   <tr key={row.id || row.name}>
-                    <td>{row.name}</td>
+                    <th scope="row">{row.name}</th>
                     <td>{row.industry}</td>
                     <td>{row.openDealCount}</td>
                     <td>{row.pipelineValueLabel}</td>
@@ -51,6 +53,7 @@ function AccountsTable({ rows }) {
               {rows.length} accounts
             </p>
             <Pagination
+              tableId={tableId}
               currentPage={currentPage}
               onPageChange={setCurrentPage}
               totalPages={totalPages}

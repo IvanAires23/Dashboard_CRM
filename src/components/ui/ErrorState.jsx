@@ -1,24 +1,37 @@
 import clsx from 'clsx'
 import Card from './Card.jsx'
+import { getErrorDiagnosticSummary, normalizeError } from '../../lib/errors/normalizeError.js'
 
 function ErrorState({
   title = 'Unable to load data',
-  description = 'Please try again in a few seconds.',
+  description = '',
+  error = null,
   eyebrow = 'Error',
   onRetry,
   retryLabel = 'Try again',
+  showDiagnostics = import.meta.env.DEV,
   className,
   contained = true,
 }) {
+  const normalizedError = normalizeError(error, {
+    fallbackMessage: description || 'Please try again in a few seconds.',
+  })
+  const resolvedDescription = description || normalizedError.userMessage
+
   const content = (
     <div className="error-state__content">
       <p className="eyebrow">{eyebrow}</p>
       <h2>{title}</h2>
-      <p>{description}</p>
+      <p>{resolvedDescription}</p>
       {onRetry ? (
         <button className="state-action" onClick={onRetry} type="button">
           {retryLabel}
         </button>
+      ) : null}
+      {showDiagnostics && error ? (
+        <pre className="error-state__diagnostic" aria-label="error diagnostics">
+          {getErrorDiagnosticSummary(normalizedError)}
+        </pre>
       ) : null}
     </div>
   )

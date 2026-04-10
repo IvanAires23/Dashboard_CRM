@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useId, useMemo, useState } from 'react'
 import {
   closestCorners,
   DndContext,
@@ -19,7 +19,12 @@ import clsx from 'clsx'
 import { GripVertical } from 'lucide-react'
 import Card from '../../../components/ui/Card.jsx'
 
-function WidgetGridItem({ widget, disabled = false }) {
+function WidgetGridItem({
+  widget,
+  disabled = false,
+  instructionsId,
+  showHandle = true,
+}) {
   const {
     setNodeRef,
     attributes,
@@ -41,16 +46,19 @@ function WidgetGridItem({ widget, disabled = false }) {
         transition,
       }}
     >
-      <button
-        type="button"
-        className="dashboard-widget-shell__handle"
-        aria-label={`Reorder ${widget.label}`}
-        disabled={disabled}
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical size={14} />
-      </button>
+      {showHandle ? (
+        <button
+          type="button"
+          className="dashboard-widget-shell__handle"
+          aria-label={`Reorder ${widget.label}`}
+          aria-describedby={instructionsId}
+          disabled={disabled}
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical size={14} />
+        </button>
+      ) : null}
       {widget.content}
     </div>
   )
@@ -73,7 +81,9 @@ function WidgetGrid({
   widgets = [],
   onReorder = () => {},
   disabled = false,
+  showHandles = true,
 }) {
+  const instructionsId = useId()
   const [activeWidgetId, setActiveWidgetId] = useState('')
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -127,9 +137,24 @@ function WidgetGrid({
         <section
           className={clsx('dashboard-widget-grid', disabled && 'dashboard-widget-grid--disabled')}
           aria-label="Dashboard widgets"
+          aria-describedby={showHandles ? instructionsId : undefined}
+          role="list"
         >
+          {showHandles ? (
+            <p className="sr-only" id={instructionsId}>
+              To reorder dashboard widgets with keyboard, focus a reorder button, press space to pick
+              up, use arrow keys to move, then press space to drop.
+            </p>
+          ) : null}
           {widgets.map((widget) => (
-            <WidgetGridItem key={widget.id} widget={widget} disabled={disabled} />
+            <div key={widget.id} role="listitem" className="dashboard-widget-grid__item">
+              <WidgetGridItem
+                widget={widget}
+                disabled={disabled}
+                instructionsId={instructionsId}
+                showHandle={showHandles}
+              />
+            </div>
           ))}
         </section>
       </SortableContext>

@@ -36,8 +36,8 @@
   color: rgba(156, 176, 198, 0.74);
 }
 
-.contact-form__field input:focus,
-.contact-form__field select:focus {
+.contact-form__field input:focus-visible,
+.contact-form__field select:focus-visible {
   border-color: rgba(45, 212, 191, 0.5);
   box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18);
 }

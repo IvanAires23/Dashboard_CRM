@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import './ui.css'
 
-function Pagination({ currentPage, onPageChange, totalPages }) {
+function Pagination({ currentPage, onPageChange, totalPages, tableId }) {
   if (totalPages <= 1) {
     return null
   }
@@ -15,6 +15,8 @@ function Pagination({ currentPage, onPageChange, totalPages }) {
         disabled={currentPage === 1}
         onClick={() => onPageChange(currentPage - 1)}
         type="button"
+        aria-label="Go to previous page"
+        aria-controls={tableId}
       >
         Prev
       </button>
@@ -28,6 +30,9 @@ function Pagination({ currentPage, onPageChange, totalPages }) {
             })}
             onClick={() => onPageChange(page)}
             type="button"
+            aria-label={`Go to page ${page}`}
+            aria-current={page === currentPage ? 'page' : undefined}
+            aria-controls={tableId}
           >
             {page}
           </button>
@@ -39,6 +44,8 @@ function Pagination({ currentPage, onPageChange, totalPages }) {
         disabled={currentPage === totalPages}
         onClick={() => onPageChange(currentPage + 1)}
         type="button"
+        aria-label="Go to next page"
+        aria-controls={tableId}
       >
         Next
       </button>

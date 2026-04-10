@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { TextInput } from '../../../components/form/index.js'
 import FormFeedback from '../../../lib/forms/FormFeedback.jsx'
 import { useAsyncFormSubmission } from '../../../lib/forms/submission.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import { useZodForm } from '../../../lib/forms/useZodForm.js'
 import { accountDefaultValues, accountSchema, getAccountFormValues } from '../schemas/accountSchema.js'
 import './AccountForm.css'
@@ -35,6 +36,7 @@ function AccountForm({
   }, [reset, resolvedInitialValues])
 
   const isEditMode = mode === 'edit'
+  const toast = useToast()
   const {
     isSubmittingAsync,
     successMessage,
@@ -43,6 +45,12 @@ function AccountForm({
   } = useAsyncFormSubmission({
     successMessage: isEditMode ? 'Account updated successfully.' : 'Account created successfully.',
     defaultErrorMessage: 'Unable to save account right now. Please try again.',
+    onSuccess: ({ message }) => {
+      toast.success(message || 'Account saved successfully.')
+    },
+    onError: ({ message }) => {
+      toast.error(message || 'Unable to save account right now. Please try again.')
+    },
   })
   const isBusy = isSubmitting || isSaving || isSubmittingAsync
   const nameError = getFieldError('name')

@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { SelectInput, TextInput } from '../../../components/form/index.js'
 import FormFeedback from '../../../lib/forms/FormFeedback.jsx'
 import { useAsyncFormSubmission } from '../../../lib/forms/submission.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import { useZodForm } from '../../../lib/forms/useZodForm.js'
 import {
   getLeadFormValues,
@@ -48,6 +49,7 @@ function LeadForm({
   }, [reset, resolvedInitialValues])
 
   const isEditMode = mode === 'edit'
+  const toast = useToast()
   const {
     isSubmittingAsync,
     successMessage,
@@ -56,6 +58,12 @@ function LeadForm({
   } = useAsyncFormSubmission({
     successMessage: isEditMode ? 'Lead updated successfully.' : 'Lead created successfully.',
     defaultErrorMessage: 'Unable to save lead right now. Please try again.',
+    onSuccess: ({ message }) => {
+      toast.success(message || 'Lead saved successfully.')
+    },
+    onError: ({ message }) => {
+      toast.error(message || 'Unable to save lead right now. Please try again.')
+    },
   })
   const isBusy = isSubmitting || isSaving || isSubmittingAsync
   const nameError = getFieldError('name')

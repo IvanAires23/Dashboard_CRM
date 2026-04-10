@@ -51,9 +51,9 @@
   color: rgba(156, 176, 198, 0.74);
 }
 
-.task-form__field input:focus,
-.task-form__field select:focus,
-.task-form__field textarea:focus {
+.task-form__field input:focus-visible,
+.task-form__field select:focus-visible,
+.task-form__field textarea:focus-visible {
   border-color: rgba(45, 212, 191, 0.5);
   box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18);
 }

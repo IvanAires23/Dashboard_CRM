@@ -1,16 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import DetailSkeleton from '../../../components/ui/DetailSkeleton.jsx'
 import ErrorState from '../../../components/ui/ErrorState.jsx'
-import LoadingState from '../../../components/ui/LoadingState.jsx'
 import PageContainer from '../../../components/ui/PageContainer.jsx'
 import WidgetContainer from '../../../components/ui/WidgetContainer.jsx'
 import { deleteAccount, getAccountById } from '../../../services/accounts.js'
 import { extractEntity, getDisplayValue, resolveEntityId } from '../../../lib/crm/entityUtils.js'
+import { useConfirm } from '../../../lib/confirm/useConfirm.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import '../../../components/crud/crud.css'
 
 function AccountDetailPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const confirm = useConfirm()
+  const toast = useToast()
   const { accountId } = useParams()
 
   const accountQuery = useQuery({
@@ -23,7 +27,11 @@ function AccountDetailPage() {
     mutationFn: deleteAccount,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] })
+      toast.success('Account deleted successfully.')
       navigate('/accounts', { replace: true })
+    },
+    onError: (error) => {
+      toast.error(error?.message || 'Unable to delete account right now. Please try again.')
     },
   })
 
@@ -35,8 +43,14 @@ function AccountDetailPage() {
       return
     }
 
-    const shouldDelete = window.confirm('Delete this account? This action cannot be undone.')
-    if (!shouldDelete) {
+    const isConfirmed = await confirm({
+      title: 'Delete account?',
+      description: 'This action permanently removes the account and cannot be undone.',
+      confirmLabel: 'Delete account',
+      cancelLabel: 'Cancel',
+      tone: 'danger',
+    })
+    if (!isConfirmed) {
       return
     }
 
@@ -46,7 +60,9 @@ function AccountDetailPage() {
   if (accountQuery.isPending) {
     return (
       <PageContainer>
-        <LoadingState eyebrow="Accounts" title="Loading account" description="Fetching account details." />
+        <WidgetContainer eyebrow="Accounts" title="Account details" meta="Loading record">
+          <DetailSkeleton fields={4} />
+        </WidgetContainer>
       </PageContainer>
     )
   }
@@ -57,7 +73,8 @@ function AccountDetailPage() {
         <ErrorState
           eyebrow="Accounts"
           title="Unable to load account"
-          description={accountQuery.error?.message || 'Account not found.'}
+          error={accountQuery.error}
+          description="Account not found."
           onRetry={accountQuery.refetch}
         />
       </PageContainer>

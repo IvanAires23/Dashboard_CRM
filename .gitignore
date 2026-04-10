@@ -9,6 +9,7 @@ dist-ssr/
 coverage/
 test-results/
 playwright-report/
+blob-report/
 
 # Logs
 logs/

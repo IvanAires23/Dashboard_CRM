@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { DateInput, SelectInput, TextInput } from '../../../components/form/index.js'
 import FormFeedback from '../../../lib/forms/FormFeedback.jsx'
 import { useAsyncFormSubmission } from '../../../lib/forms/submission.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import { useZodForm } from '../../../lib/forms/useZodForm.js'
 import { DEAL_PIPELINE_STAGES, dealDefaultValues, dealSchema, getDealFormValues } from '../schemas/dealSchema.js'
 import './DealForm.css'
@@ -35,6 +36,7 @@ function DealForm({
   }, [reset, resolvedInitialValues])
 
   const isEditMode = mode === 'edit'
+  const toast = useToast()
   const {
     isSubmittingAsync,
     successMessage,
@@ -43,6 +45,12 @@ function DealForm({
   } = useAsyncFormSubmission({
     successMessage: isEditMode ? 'Deal updated successfully.' : 'Deal created successfully.',
     defaultErrorMessage: 'Unable to save deal right now. Please try again.',
+    onSuccess: ({ message }) => {
+      toast.success(message || 'Deal saved successfully.')
+    },
+    onError: ({ message }) => {
+      toast.error(message || 'Unable to save deal right now. Please try again.')
+    },
   })
   const isBusy = isSubmitting || isSaving || isSubmittingAsync
   const titleError = getFieldError('title')

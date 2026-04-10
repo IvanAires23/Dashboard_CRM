@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useToast } from '../../../lib/toast/useToast.js'
 import { moveDealStage } from '../../../services/deals.js'
 
 const DEALS_QUERY_KEY = ['deals']
@@ -80,6 +81,7 @@ function patchDealPayload(payload, dealId, stageId) {
 
 export function useMoveDealStage() {
   const queryClient = useQueryClient()
+  const toast = useToast()
 
   return useMutation({
     mutationFn: ({ dealId, stageId }) => moveDealStage(dealId, stageId),
@@ -104,13 +106,18 @@ export function useMoveDealStage() {
         dealId: normalizedDealId,
       }
     },
-    onError: (_error, _variables, context) => {
+    onError: (error, _variables, context) => {
       if (!context) {
+        toast.error(error?.message || 'Unable to move deal stage right now. Please try again.')
         return
       }
 
       queryClient.setQueryData(DEALS_QUERY_KEY, context.previousDeals)
       queryClient.setQueryData(['deal', context.dealId], context.previousDeal)
+      toast.error(error?.message || 'Unable to move deal stage right now. Please try again.')
+    },
+    onSuccess: () => {
+      toast.success('Deal stage updated successfully.')
     },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: DEALS_QUERY_KEY })

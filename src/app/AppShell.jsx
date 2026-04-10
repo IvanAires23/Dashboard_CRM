@@ -1,11 +1,14 @@
 import AppProviders from './providers.jsx'
+import ErrorBoundary from '../components/system/ErrorBoundary.jsx'
 import AppRoutes from '../routes/AppRoutes.jsx'
 
 function AppShell() {
   return (
-    <AppProviders>
-      <AppRoutes />
-    </AppProviders>
+    <ErrorBoundary>
+      <AppProviders>
+        <AppRoutes />
+      </AppProviders>
+    </ErrorBoundary>
   )
 }
 

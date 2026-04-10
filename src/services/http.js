@@ -1,8 +1,8 @@
+import { createAppError } from '../lib/errors/normalizeError.js'
+
 const DEFAULT_HEADERS = {
   Accept: 'application/json',
 }
-
-const DEFAULT_ERROR_MESSAGE = 'Something went wrong while processing the request.'
 
 function getEnvBaseUrl() {
   return import.meta.env?.VITE_API_URL ?? import.meta.env?.VITE_API_BASE_URL ?? ''
@@ -120,26 +120,6 @@ function parseErrorMessage(data) {
   return null
 }
 
-function createHttpError({
-  message = DEFAULT_ERROR_MESSAGE,
-  code = 'HTTP_ERROR',
-  status = null,
-  method = null,
-  url = null,
-  details = null,
-  cause = null,
-}) {
-  const error = new Error(message, { cause })
-  error.name = 'HttpError'
-  error.code = code
-  error.status = status
-  error.method = method
-  error.url = url
-  error.details = details
-  error.isHttpError = true
-  return error
-}
-
 async function parseResponseBody(response) {
   if (response.status === 204 || response.status === 205) {
     return null
@@ -209,7 +189,8 @@ export function createHttpClient(config = {}) {
         throw error
       }
 
-      throw createHttpError({
+      throw createAppError({
+        name: 'HttpError',
         message: 'Network request failed.',
         code: 'NETWORK_ERROR',
         method: requestMethod,
@@ -223,7 +204,8 @@ export function createHttpClient(config = {}) {
     try {
       responseData = await parseResponseBody(response)
     } catch (error) {
-      throw createHttpError({
+      throw createAppError({
+        name: 'HttpError',
         message: 'Failed to parse server response.',
         code: 'PARSE_ERROR',
         status: response.status,
@@ -234,7 +216,8 @@ export function createHttpClient(config = {}) {
     }
 
     if (!response.ok) {
-      throw createHttpError({
+      throw createAppError({
+        name: 'HttpError',
         message:
           parseErrorMessage(responseData) ||
           `Request failed with status ${response.status}.`,

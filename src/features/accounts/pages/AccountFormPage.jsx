@@ -85,7 +85,8 @@ function AccountFormPage() {
         <ErrorState
           eyebrow="Accounts"
           title="Unable to load account"
-          description={accountQuery.error?.message || 'Please try again in a few seconds.'}
+          error={accountQuery.error}
+          description="Please try again in a few seconds."
           onRetry={accountQuery.refetch}
         />
       </PageContainer>

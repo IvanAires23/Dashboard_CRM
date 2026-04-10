@@ -240,16 +240,32 @@ export function mapStageDistributionData(deals = []) {
 }
 
 export function mapPipelineFunnelData(deals = []) {
-  const stageDistribution = mapStageDistributionData(deals).filter((stage) => stage.deals > 0)
+  const stageDistribution = mapStageDistributionData(deals)
+    .filter((stage) => stage.deals > 0 && stage.stageId !== 'closed-lost')
+
   if (!stageDistribution.length) {
     return []
   }
 
-  const topStageCount = stageDistribution[0]?.deals || 0
+  const funnelStages = []
+  let previousStageDeals = Number.POSITIVE_INFINITY
 
-  return stageDistribution.map((stage) => ({
+  stageDistribution.forEach((stage) => {
+    const funnelDeals = Math.min(previousStageDeals, stage.deals)
+    previousStageDeals = funnelDeals
+
+    funnelStages.push({
+      ...stage,
+      actualDeals: stage.deals,
+      funnelDeals,
+    })
+  })
+
+  const topStageCount = funnelStages[0]?.funnelDeals || 0
+
+  return funnelStages.map((stage) => ({
     ...stage,
-    conversionFromTop: topStageCount ? (stage.deals / topStageCount) * 100 : 0,
+    conversionFromTop: topStageCount ? (stage.funnelDeals / topStageCount) * 100 : 0,
   }))
 }
 
@@ -461,4 +477,3 @@ export function mapLostDealsTrendData(deals = []) {
 
   return series
 }
-

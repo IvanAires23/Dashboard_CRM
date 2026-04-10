@@ -109,7 +109,8 @@ function DealFormPage() {
         <ErrorState
           eyebrow="Deals"
           title="Unable to load deal"
-          description={dealQuery.error?.message || 'Please try again in a few seconds.'}
+          error={dealQuery.error}
+          description="Please try again in a few seconds."
           onRetry={dealQuery.refetch}
         />
       </PageContainer>

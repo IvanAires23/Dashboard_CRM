@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { SelectInput, TextInput } from '../../../components/form/index.js'
 import FormFeedback from '../../../lib/forms/FormFeedback.jsx'
 import { useAsyncFormSubmission } from '../../../lib/forms/submission.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import { useZodForm } from '../../../lib/forms/useZodForm.js'
 import {
   buildContactPayload,
@@ -47,6 +48,7 @@ function ContactForm({
 
   const isEditMode = mode === 'edit'
   const hasAccounts = accountOptions.length > 0
+  const toast = useToast()
   const {
     isSubmittingAsync,
     successMessage,
@@ -56,6 +58,12 @@ function ContactForm({
   } = useAsyncFormSubmission({
     successMessage: isEditMode ? 'Contact updated successfully.' : 'Contact created successfully.',
     defaultErrorMessage: 'Unable to save contact right now. Please try again.',
+    onSuccess: ({ message }) => {
+      toast.success(message || 'Contact saved successfully.')
+    },
+    onError: ({ message }) => {
+      toast.error(message || 'Unable to save contact right now. Please try again.')
+    },
   })
   const isBusy = isSubmitting || isSaving || isSubmittingAsync
   const nameError = getFieldError('name')

@@ -83,7 +83,8 @@ function LeadFormPage() {
         <ErrorState
           eyebrow="Leads"
           title="Unable to load lead"
-          description={leadQuery.error?.message || 'Please try again in a few seconds.'}
+          error={leadQuery.error}
+          description="Please try again in a few seconds."
           onRetry={leadQuery.refetch}
         />
       </PageContainer>

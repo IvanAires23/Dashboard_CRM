@@ -5,6 +5,7 @@ function EmptyState({
   description,
   title,
   eyebrow = 'Empty',
+  action,
   actionLabel,
   onAction,
   className,
@@ -15,7 +16,8 @@ function EmptyState({
       <p className="eyebrow">{eyebrow}</p>
       <h2>{title}</h2>
       <p>{description}</p>
-      {actionLabel && onAction ? (
+      {action ? action : null}
+      {!action && actionLabel && onAction ? (
         <button className="state-action" onClick={onAction} type="button">
           {actionLabel}
         </button>

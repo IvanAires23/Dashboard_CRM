@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react'
 import { DateInput, SelectInput, TextArea, TextInput } from '../../../components/form/index.js'
 import FormFeedback from '../../../lib/forms/FormFeedback.jsx'
 import { useAsyncFormSubmission } from '../../../lib/forms/submission.js'
+import { useToast } from '../../../lib/toast/useToast.js'
 import { useZodForm } from '../../../lib/forms/useZodForm.js'
 import {
   TASK_PRIORITY_OPTIONS,
@@ -49,6 +50,7 @@ function TaskForm({
 
   const isEditMode = mode === 'edit'
   const hasAssignees = assigneeOptions.length > 0
+  const toast = useToast()
   const {
     isSubmittingAsync,
     successMessage,
@@ -58,6 +60,12 @@ function TaskForm({
   } = useAsyncFormSubmission({
     successMessage: isEditMode ? 'Task updated successfully.' : 'Task created successfully.',
     defaultErrorMessage: 'Unable to save task right now. Please try again.',
+    onSuccess: ({ message }) => {
+      toast.success(message || 'Task saved successfully.')
+    },
+    onError: ({ message }) => {
+      toast.error(message || 'Unable to save task right now. Please try again.')
+    },
   })
   const isBusy = isSubmitting || isSaving || isSubmittingAsync
   const titleError = getFieldError('title')
