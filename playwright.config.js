@@ -35,9 +35,9 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     env: {
       VITE_AUTH_MOCK: 'true',
+      VITE_CRM_MOCK: 'false',
       VITE_DASHBOARD_MOCK: 'true',
       VITE_API_URL: 'http://127.0.0.1:4173/api',
     },
   },
 })
-

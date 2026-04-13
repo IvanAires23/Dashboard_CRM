@@ -1,37 +1,63 @@
 import { del, get, patch, post } from './http.js'
+import { withCrmFallback } from './mockFallback.js'
+import { mockCrmStore } from './mockCrmStore.js'
 
 const TASKS_BASE = '/tasks'
 
 export function getTasks(filters = {}) {
-  return get(TASKS_BASE, { query: filters })
+  return withCrmFallback(
+    () => get(TASKS_BASE, { query: filters }),
+    () => mockCrmStore.getTasks(filters),
+  )
 }
 
 export function getTaskById(taskId) {
-  return get(`${TASKS_BASE}/${taskId}`)
+  return withCrmFallback(
+    () => get(`${TASKS_BASE}/${taskId}`),
+    () => mockCrmStore.getTaskById(taskId),
+  )
 }
 
 export function createTask(payload) {
-  return post(TASKS_BASE, payload)
+  return withCrmFallback(
+    () => post(TASKS_BASE, payload),
+    () => mockCrmStore.createTask(payload),
+  )
 }
 
 export function updateTask(taskId, payload) {
-  return patch(`${TASKS_BASE}/${taskId}`, payload)
+  return withCrmFallback(
+    () => patch(`${TASKS_BASE}/${taskId}`, payload),
+    () => mockCrmStore.updateTask(taskId, payload),
+  )
 }
 
 export function deleteTask(taskId) {
-  return del(`${TASKS_BASE}/${taskId}`)
+  return withCrmFallback(
+    () => del(`${TASKS_BASE}/${taskId}`),
+    () => mockCrmStore.deleteTask(taskId),
+  )
 }
 
 export function completeTask(taskId, payload = {}) {
-  return patch(`${TASKS_BASE}/${taskId}/complete`, payload)
+  return withCrmFallback(
+    () => patch(`${TASKS_BASE}/${taskId}/complete`, payload),
+    () => mockCrmStore.completeTask(taskId, payload),
+  )
 }
 
 export function reopenTask(taskId) {
-  return patch(`${TASKS_BASE}/${taskId}/reopen`, {})
+  return withCrmFallback(
+    () => patch(`${TASKS_BASE}/${taskId}/reopen`, {}),
+    () => mockCrmStore.reopenTask(taskId),
+  )
 }
 
 export function assignTask(taskId, ownerId) {
-  return patch(`${TASKS_BASE}/${taskId}/assignee`, { ownerId })
+  return withCrmFallback(
+    () => patch(`${TASKS_BASE}/${taskId}/assignee`, { ownerId }),
+    () => mockCrmStore.assignTask(taskId, ownerId),
+  )
 }
 
 export default {

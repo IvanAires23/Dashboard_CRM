@@ -1,0 +1,89 @@
+.settings-page {
+  gap: 1rem;
+}
+
+.settings-page__header {
+  padding: 1.15rem 1.25rem;
+}
+
+.settings-page__header h1,
+.settings-page__header p {
+  margin: 0;
+}
+
+.settings-page__header h1 {
+  margin-bottom: 0.45rem;
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  color: #f4f9ff;
+}
+
+.settings-page__header p {
+  color: #9cb0c6;
+  line-height: 1.55;
+}
+
+.settings-page__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.settings-page__stat-card {
+  padding: 1rem;
+  border-color: rgba(148, 163, 184, 0.22);
+  background: linear-gradient(160deg, rgba(6, 22, 34, 0.86), rgba(12, 37, 55, 0.68));
+  box-shadow: none;
+}
+
+.settings-page__stat-card span,
+.settings-page__stat-card p {
+  color: #91a8bf;
+}
+
+.settings-page__stat-card strong {
+  display: block;
+  margin: 0.25rem 0 0.1rem;
+  font-size: 1.1rem;
+  color: #f1f7ff;
+}
+
+.settings-page__stat-card p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.settings-demo-reset {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.settings-demo-reset p {
+  margin: 0;
+  color: #9cb0c6;
+  line-height: 1.55;
+}
+
+.settings-demo-reset__button {
+  width: fit-content;
+}
+
+.settings-demo-reset__hint code {
+  color: #e2f7ff;
+  font-size: 0.85em;
+}
+
+.settings-page__checklist {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.55rem;
+  color: #9cb0c6;
+}
+
+@media (max-width: 720px) {
+  .settings-page__stats {
+    grid-template-columns: 1fr;
+  }
+}
+

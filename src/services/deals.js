@@ -1,33 +1,56 @@
 import { del, get, patch, post } from './http.js'
+import { withCrmFallback } from './mockFallback.js'
+import { mockCrmStore } from './mockCrmStore.js'
 
 const DEALS_BASE = '/deals'
 
 export function getDeals(filters = {}) {
-  return get(DEALS_BASE, { query: filters })
+  return withCrmFallback(
+    () => get(DEALS_BASE, { query: filters }),
+    () => mockCrmStore.getDeals(filters),
+  )
 }
 
 export function getDealById(dealId) {
-  return get(`${DEALS_BASE}/${dealId}`)
+  return withCrmFallback(
+    () => get(`${DEALS_BASE}/${dealId}`),
+    () => mockCrmStore.getDealById(dealId),
+  )
 }
 
 export function createDeal(payload) {
-  return post(DEALS_BASE, payload)
+  return withCrmFallback(
+    () => post(DEALS_BASE, payload),
+    () => mockCrmStore.createDeal(payload),
+  )
 }
 
 export function updateDeal(dealId, payload) {
-  return patch(`${DEALS_BASE}/${dealId}`, payload)
+  return withCrmFallback(
+    () => patch(`${DEALS_BASE}/${dealId}`, payload),
+    () => mockCrmStore.updateDeal(dealId, payload),
+  )
 }
 
 export function deleteDeal(dealId) {
-  return del(`${DEALS_BASE}/${dealId}`)
+  return withCrmFallback(
+    () => del(`${DEALS_BASE}/${dealId}`),
+    () => mockCrmStore.deleteDeal(dealId),
+  )
 }
 
 export function moveDealStage(dealId, stageId) {
-  return patch(`${DEALS_BASE}/${dealId}/stage`, { stageId })
+  return withCrmFallback(
+    () => patch(`${DEALS_BASE}/${dealId}/stage`, { stageId }),
+    () => mockCrmStore.moveDealStage(dealId, stageId),
+  )
 }
 
 export function getDealTimeline(dealId, filters = {}) {
-  return get(`${DEALS_BASE}/${dealId}/timeline`, { query: filters })
+  return withCrmFallback(
+    () => get(`${DEALS_BASE}/${dealId}/timeline`, { query: filters }),
+    () => mockCrmStore.getDealTimeline(dealId, filters),
+  )
 }
 
 export default {

@@ -78,7 +78,7 @@ export async function mockCrmApi(page, fixtures = {}) {
 
   await page.route('**/api/**', async (route) => {
     const request = route.request()
-    const url = new URL(request.url())
+    const url = new globalThis.URL(request.url())
     const { pathname } = url
     const method = request.method().toUpperCase()
 
@@ -176,4 +176,3 @@ export async function mockCrmApi(page, fixtures = {}) {
     },
   }
 }
-

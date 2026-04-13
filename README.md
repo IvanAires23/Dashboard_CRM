@@ -1,27 +1,46 @@
 # CRM Dashboard
 
-Frontend de um CRM moderno construído com React + Vite, com foco em experiência visual, navegação modular e base escalável para evolução de produto.
+Frontend de CRM construido com React + Vite, com foco em uso operacional real:
+pipeline visual, CRUD completo, dashboard com KPIs, filtros, busca global, testes e CI.
 
 ## Live Demo
 
-- Produção: **https://dashboard-crm-nu.vercel.app/#/login**
+- Producao: **https://dashboard-crm-nu.vercel.app/#/login**
 
-Credenciais de demonstração:
+Credenciais demo:
 
 - Email: `email@email.com`
 - Senha: `123456`
 
-## Objetivo do Projeto
+## Destaques
 
-Este projeto serve como base para um painel CRM com estrutura pronta para evoluir para fluxos reais de negócio, incluindo:
+- Dashboard orientado a dados com KPIs e graficos (Recharts)
+- Pipeline de deals com drag and drop (DnD Kit)
+- CRUD de Leads, Deals, Accounts, Contacts e Tasks
+- Formularios padronizados com React Hook Form + Zod
+- Filtros reutilizaveis, busca global e tabelas com ordenacao/paginacao
+- Estados de loading/empty/error padronizados
+- Toaster, confirm dialogs e Error Boundary global
+- Tratamento global de erros para services, queries e UI
+- Modo demo-first com dados mock persistidos em `localStorage`
+- Acao de reset dos dados demo em `Settings`
 
-- gestão de pipeline de vendas
-- visão de contas e contatos
-- organização de tarefas e agenda
-- permissões por perfil de usuário
-- integração progressiva com APIs
+## Arquitetura
 
-## Stack Tecnológica
+Estrutura de alto nivel:
+
+```text
+src/
+  app/          # shell, layout e providers globais
+  routes/       # roteamento e protecao de acesso
+  features/     # modulos de dominio (dashboard, deals, leads, etc.)
+  services/     # camada HTTP + fallback demo/mock
+  components/   # UI reutilizavel (forms, table, feedback, filters)
+  lib/          # utilitarios (errors, forms, search, filters, table)
+  store/        # estado global (auth)
+```
+
+## Stack Tecnologica
 
 - React 19
 - Vite
@@ -31,88 +50,96 @@ Este projeto serve como base para um painel CRM com estrutura pronta para evolui
 - React Hook Form + Zod
 - Recharts
 - DnD Kit
+- Vitest + Testing Library
+- Playwright
 - ESLint
+- GitHub Actions (CI)
 
 ## Scripts
 
-- `npm run dev`: inicia ambiente local de desenvolvimento
-- `npm run build`: gera build de produção
-- `npm run preview`: executa preview local da build
-- `npm run lint`: valida padrão de código
+- `npm run dev`: inicia ambiente local
+- `npm run build`: gera build de producao
+- `npm run preview`: preview local da build
+- `npm run lint`: validacao de codigo
+- `npm run test`: modo watch dos testes (Vitest)
+- `npm run test:run`: execucao unica de testes unit/component
+- `npm run e2e`: testes E2E (Playwright)
+- `npm run e2e:headed`: E2E com navegador visivel
+- `npm run e2e:ui`: runner UI do Playwright
 
 ## Setup Local
 
-### Pré-requisitos
+### Pre-requisitos
 
 - Node.js 20+
 - npm 10+
 
-### Instalação
+### Instalacao
 
 ```bash
 npm install
 ```
 
-### Variáveis de Ambiente
+### Variaveis de ambiente
 
-Crie o arquivo `.env.local` com base no `.env.example`.
+Crie um `.env.local` baseado no `.env.example`.
 
-Exemplo:
+Exemplo recomendado para demo local:
 
 ```env
 VITE_API_URL=http://localhost:3000/api
 VITE_AUTH_MOCK=true
+VITE_CRM_MOCK=true
+VITE_DASHBOARD_MOCK=true
 ```
 
-### Executar Localmente
+### Rodar local
 
 ```bash
 npm run dev
 ```
 
-Aplicação local (padrão): `http://localhost:5173`
+Aplicacao local padrao: `http://localhost:5173`
 
-## Build e Deploy
+## Testes e Qualidade
 
-Build de produção:
+- Unit/component: Vitest + Testing Library
+- E2E: Playwright (fluxos criticos de auth, navegacao e leads)
+- CI automatica em GitHub Actions:
+  - install
+  - lint
+  - test:run
+  - build
 
-```bash
-npm run build
-```
+Workflow: `.github/workflows/ci.yml`
 
-Preview da build:
+## Modo Demo
 
-```bash
-npm run preview
-```
+O projeto esta preparado para apresentacao sem backend:
 
-Deploy recomendado: Vercel (preset `Vite`, output `dist`).
+- `VITE_CRM_MOCK=true` ativa dados demo para entidades CRM
+- dados demo persistem no navegador
+- botao de reset em `Settings` restaura o dataset inicial
 
-## Estrutura de Alto Nível
+Se quiser forcar API real:
 
-```text
-src/
-  app/          # shell, layout e providers globais
-  routes/       # configuração e proteção de rotas
-  features/     # módulos de domínio (dashboard, accounts, deals, etc.)
-  services/     # camada de acesso HTTP/API
-  components/   # componentes reutilizáveis de UI/layout
-  store/        # estado global (auth)
-```
+- configure `VITE_CRM_MOCK=false`
+- mantenha `VITE_API_URL` apontando para seu backend
 
-## Status Atual
+## Estado Atual
 
-O projeto está em estágio funcional de frontend, com:
+Projeto pronto para demonstracao profissional de frontend CRM, com:
 
-- interface e navegação principais implementadas
-- autenticação mock para fluxo de demonstração
-- módulos iniciais de CRM organizados por feature
-- pipeline de build/lint validado
+- UX completa de operacao (dashboard, pipeline, CRUD, filtros, busca)
+- padroes reutilizaveis de formulario e validacao
+- padroes globais de erro e feedback
+- cobertura automatizada (unit/component + E2E)
+- pipeline de CI para validacao continua
 
-## Roadmap
+## Proximos passos sugeridos
 
-- persistência de sessão e auth real
-- integração completa com backend
-- CRUDs por módulo (accounts, contacts, deals, tasks)
-- testes automatizados (unitários e e2e)
-- observabilidade e hardening para produção
+- Integrar autenticacao real e persistencia de sessao
+- Conectar backend de producao com dados reais
+- Adicionar telemetria e monitoramento de erros em producao
+- Evoluir suite E2E para fluxos completos por entidade
+

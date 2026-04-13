@@ -1,33 +1,56 @@
 import { del, get, patch, post } from './http.js'
+import { withCrmFallback } from './mockFallback.js'
+import { mockCrmStore } from './mockCrmStore.js'
 
 const CONTACTS_BASE = '/contacts'
 
 export function getContacts(filters = {}) {
-  return get(CONTACTS_BASE, { query: filters })
+  return withCrmFallback(
+    () => get(CONTACTS_BASE, { query: filters }),
+    () => mockCrmStore.getContacts(filters),
+  )
 }
 
 export function getContactById(contactId) {
-  return get(`${CONTACTS_BASE}/${contactId}`)
+  return withCrmFallback(
+    () => get(`${CONTACTS_BASE}/${contactId}`),
+    () => mockCrmStore.getContactById(contactId),
+  )
 }
 
 export function createContact(payload) {
-  return post(CONTACTS_BASE, payload)
+  return withCrmFallback(
+    () => post(CONTACTS_BASE, payload),
+    () => mockCrmStore.createContact(payload),
+  )
 }
 
 export function updateContact(contactId, payload) {
-  return patch(`${CONTACTS_BASE}/${contactId}`, payload)
+  return withCrmFallback(
+    () => patch(`${CONTACTS_BASE}/${contactId}`, payload),
+    () => mockCrmStore.updateContact(contactId, payload),
+  )
 }
 
 export function deleteContact(contactId) {
-  return del(`${CONTACTS_BASE}/${contactId}`)
+  return withCrmFallback(
+    () => del(`${CONTACTS_BASE}/${contactId}`),
+    () => mockCrmStore.deleteContact(contactId),
+  )
 }
 
 export function getContactInteractions(contactId, filters = {}) {
-  return get(`${CONTACTS_BASE}/${contactId}/interactions`, { query: filters })
+  return withCrmFallback(
+    () => get(`${CONTACTS_BASE}/${contactId}/interactions`, { query: filters }),
+    () => mockCrmStore.getContactInteractions(contactId, filters),
+  )
 }
 
 export function addContactInteraction(contactId, payload) {
-  return post(`${CONTACTS_BASE}/${contactId}/interactions`, payload)
+  return withCrmFallback(
+    () => post(`${CONTACTS_BASE}/${contactId}/interactions`, payload),
+    () => mockCrmStore.addContactInteraction(contactId, payload),
+  )
 }
 
 export default {

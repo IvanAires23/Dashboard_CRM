@@ -11,5 +11,6 @@ export default defineConfig({
     css: true,
     clearMocks: true,
     restoreMocks: true,
+    exclude: ['tests/e2e/**', 'node_modules/**', 'dist/**'],
   },
 })
